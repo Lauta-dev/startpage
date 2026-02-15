@@ -1,30 +1,10 @@
 import BookmarkList from "@/components/bookmarksList";
 import DateTimeDisplay from "@/components/DateTimeDisplay";
 
-export default function Home() {
-  const data = [
-    {
-      category: "Programming",
-      links: [
-        {
-          name: "GitHub",
-          icon: "https://github.com/fluidicon.png",
-          site: "github.com"
-        },
-        {
-          name: "Google",
-          icon: "https://www.gstatic.com/images/branding/product/1x/googleg_standard_color_128dp.png",
-          site: "google.com"
-        },
-        {
-          name: "Hacker News",
-          icon: "https://news.ycombinator.com/y18.svg",
-          site: "news.ycombinator.com/"
-        },
-      ]
-    }
-  ];
-
+export default async function Home() {
+  const res = await fetch('http://localhost:3000/api/bookmark'); // Ruta relativa
+  const data = await res.json();
+  
   return (
     <main className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50 flex flex-col">
       {/* Date & Time Display */}
