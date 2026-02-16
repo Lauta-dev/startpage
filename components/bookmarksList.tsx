@@ -229,12 +229,16 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ data }) => {
 
             <div className="flex gap-3 mt-8">
               <button 
+                type="button"
                 onClick={handleCloseModal}
                 className="flex-1 px-6 py-3 bg-gray-200 dark:bg-neutral-900 text-gray-700 dark:text-neutral-300 rounded-xl font-semibold hover:bg-gray-300 dark:hover:bg-neutral-800 transition-colors"
               >
                 Cancelar
               </button>
-              <button className="flex-1 px-6 py-3 bg-blue-500 dark:bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors" >
+              <button
+                  onClick={handleCloseModal}
+                  type="submit"
+                  className="flex-1 px-6 py-3 bg-blue-500 dark:bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors" >
                 Guardar
               </button>
             </div>
