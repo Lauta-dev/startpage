@@ -2,6 +2,8 @@ import Aaa from "@/actions/getBookmark";
 import BookmarkList from "@/components/bookmarksList";
 import DateTimeDisplay from "@/components/DateTimeDisplay";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const data = await Aaa()
   
