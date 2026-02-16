@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {DefaultIcon} from "@/components/icon"
 
 interface Link {
   name: string;
@@ -61,7 +60,7 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ data }) => {
       headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: form.name, url: form.site, category: selectedCategoryId }),
       }
-try {
+    try {
     const res = await fetch('/api/bookmark', ops);
 
     // Validación de seguridad antes de parsear

@@ -1,10 +1,9 @@
+import Aaa from "@/actions/getBookmark";
 import BookmarkList from "@/components/bookmarksList";
 import DateTimeDisplay from "@/components/DateTimeDisplay";
-import ListaUsuarios from "@/components/tt";
 
 export default async function Home() {
-  const res = await fetch('http://localhost:3000/api/bookmark'); // Ruta relativa
-  const data = await res.json();
+  const data = await Aaa()
   
   return (
      <main className="min-h-screen bg-gray-50 dark:bg-black flex flex-col transition-colors">
