@@ -8,7 +8,9 @@ export default async function Home() {
   const data = await Aaa()
   
   return (
-     <main className="min-h-screen bg-gray-50 dark:bg-black flex flex-col transition-colors">
+     <main className="min-h-screen flex flex-col transition-colors">
+
+     
       {/* Date & Time Display */}
       <DateTimeDisplay />
 

@@ -35,10 +35,10 @@ const DateTimeDisplay: React.FC = () => {
 
   return (
     <div className="text-center py-8">
-      <div className="text-7xl font-bold text-gray-900 dark:text-neutral-100 mb-2">
+      <div className="text-7xl font-bold text-base-content mb-2">
         {formatTime(dateTime)}
       </div>
-      <div className="text-2xl text-gray-500 dark:text-neutral-400 font-medium">
+      <div className="text-2xl text-base-content/60 font-medium">
         {formatDate(dateTime)}
       </div>
     </div>

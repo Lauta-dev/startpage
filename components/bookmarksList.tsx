@@ -25,21 +25,11 @@ interface BookmarkListProps {
 
 const BookmarkList: React.FC<BookmarkListProps> = ({ data }) => {
   const [showBookmarkModal, setShowBookmarkModal] = useState(false);
-
   const [isClosing, setIsClosing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
-  const [isDark, setIsDark] = useState(false);
   const [editingBookmark, setEditingBookmark] = useState<{categoryIndex: number, linkIndex: number, link: Link} | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
 
   const handleCloseModal = () => {
     setIsClosing(true);
@@ -50,13 +40,10 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ data }) => {
     }, 150);
   };
 
-  
   const handleEditBookmark = (link: Link) => {
     setEditingBookmark({ categoryIndex: link.id, linkIndex: link.id, link });
     setSelectedCategoryId(link.id);
     setShowBookmarkModal(true);
-
-    console.log(editingBookmark);
   };
   
   async function updateItem(form: { [k: string]: FormDataEntryValue; }) {
@@ -111,10 +98,6 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ data }) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
-    console.log({
-      state: editingBookmark ? "editar": "crear",
-      data
-    })
     
     if(editingBookmark) {
       await updateItem(data)
@@ -144,17 +127,24 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ data }) => {
     }
   }
 
+  const toggleTheme = () => {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+  };
+
   return (
     <div className="max-w-7xl w-full px-4 sm:px-6">
-      {/* Toggle dark mode + Input para agregar categoría */}
+      {/* Toggle theme + Input para agregar categoría */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mb-6">
         <div className="relative flex-1 order-2 sm:order-1">
           <input
             type="text"
             placeholder="Nueva categoría..."
-            className="w-full px-4 py-3 pr-24 border-2 border-gray-200 dark:border-neutral-800 rounded-xl focus:border-blue-500 dark:focus:border-blue-500 focus:outline-none transition-colors bg-white dark:bg-neutral-950 text-gray-900 dark:text-neutral-100 placeholder:text-gray-400 dark:placeholder:text-neutral-600"
+            className="input input-bordered w-full pr-24"
           />
-          <button className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 px-3 sm:px-4 py-2 bg-blue-500 dark:bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
+          <button className="btn btn-primary absolute right-2 top-1/2 -translate-y-1/2 btn-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
@@ -162,105 +152,113 @@ const BookmarkList: React.FC<BookmarkListProps> = ({ data }) => {
           </button>
         </div>
         
-        {/* Toggle Dark Mode */}
-        <button
-          onClick={() => setIsDark(!isDark)}
-          className="p-3 rounded-xl bg-gray-200 dark:bg-neutral-900 hover:bg-gray-300 dark:hover:bg-neutral-800 transition-colors order-1 sm:order-2 self-end sm:self-auto"
-          title="Toggle dark mode"
-        >
-          {isDark ? (
-            <svg className="w-5 h-5 text-gray-900 dark:text-neutral-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-            </svg>
-          ) : (
-            <svg className="w-5 h-5 text-gray-900 dark:text-neutral-100" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-            </svg>
-          )}
-        </button>
+        {/* Theme Toggle */}
+        <label className="swap swap-rotate btn btn-ghost order-1 sm:order-2 self-end sm:self-auto">
+          <input type="checkbox" onChange={toggleTheme} />
+          <svg className="swap-on fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M5.64,17l-.71.71a1,1,0,0,0,0,1.41,1,1,0,0,0,1.41,0l.71-.71A1,1,0,0,0,5.64,17ZM5,12a1,1,0,0,0-1-1H3a1,1,0,0,0,0,2H4A1,1,0,0,0,5,12Zm7-7a1,1,0,0,0,1-1V3a1,1,0,0,0-2,0V4A1,1,0,0,0,12,5ZM5.64,7.05a1,1,0,0,0,.7.29,1,1,0,0,0,.71-.29,1,1,0,0,0,0-1.41l-.71-.71A1,1,0,0,0,4.93,6.34Zm12,.29a1,1,0,0,0,.7-.29l.71-.71a1,1,0,1,0-1.41-1.41L17,5.64a1,1,0,0,0,0,1.41A1,1,0,0,0,17.66,7.34ZM21,11H20a1,1,0,0,0,0,2h1a1,1,0,0,0,0-2Zm-9,8a1,1,0,0,0-1,1v1a1,1,0,0,0,2,0V20A1,1,0,0,0,12,19ZM18.36,17A1,1,0,0,0,17,18.36l.71.71a1,1,0,0,0,1.41,0,1,1,0,0,0,0-1.41ZM12,6.5A5.5,5.5,0,1,0,17.5,12,5.51,5.51,0,0,0,12,6.5Zm0,9A3.5,3.5,0,1,1,15.5,12,3.5,3.5,0,0,1,12,15.5Z"/>
+          </svg>
+          <svg className="swap-off fill-current w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M21.64,13a1,1,0,0,0-1.05-.14,8.05,8.05,0,0,1-3.37.73A8.15,8.15,0,0,1,9.08,5.49a8.59,8.59,0,0,1,.25-2A1,1,0,0,0,8,2.36,10.14,10.14,0,1,0,22,14.05,1,1,0,0,0,21.64,13Zm-9.5,6.69A8.14,8.14,0,0,1,7.08,5.22v.27A10.15,10.15,0,0,0,17.22,15.63a9.79,9.79,0,0,0,2.1-.22A8.11,8.11,0,0,1,12.14,19.73Z"/>
+          </svg>
+        </label>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {data.map((categoryData, categoryIndex) => (
-          <div key={categoryIndex} className="bg-white dark:bg-neutral-950 rounded-2xl sm:rounded-3xl p-4 sm:p-6 border-2 border-gray-100 dark:border-neutral-900 hover:border-gray-200 dark:hover:border-neutral-800 transition-colors duration-300">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                <div className="h-6 sm:h-8 w-1 bg-blue-500 rounded-full flex-shrink-0"></div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-neutral-100 truncate">
-                  {categoryData.category}
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setSelectedCategory(categoryData.category);
-                  setSelectedCategoryId(categoryData.id);
-                  setEditingBookmark(null);
-                  setShowBookmarkModal(true);
-                }}
-                className="w-8 h-8 flex-shrink-0 flex items-center justify-center bg-blue-50 dark:bg-blue-500/10 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-lg transition-colors ml-2"
-                title="Agregar bookmark"
-              >
-                <svg className="w-5 h-5 text-blue-600 dark:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                </svg>
-              </button>
-            </div>
-
-            <div className="space-y-2 sm:space-y-3">
-              {categoryData.links.map((link) => (
-                <div
-                  key={link.id}
-                  className="group relative flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-gray-50 dark:bg-neutral-900 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-all duration-300"
-                >
-                  <a
-                    href={`https://${link.site}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0"
-                  >
-                    <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center bg-white dark:bg-neutral-950 rounded-lg transition-colors duration-300 shadow-sm">
-                      <img
-                        src={link.icon === "" ? "https://svgl.app/images/svgl_svg.svg" : link.icon}
-                        alt={`${link.name} icon`}
-                        className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 dark:text-neutral-100 truncate text-xs sm:text-sm group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors duration-300">
-                        {link.name}
-                      </h3>
-                      <p className="text-[10px] sm:text-xs text-gray-500 dark:text-neutral-400 truncate">
-                        {link.site}
-                      </p>
-                    </div>
-                  </a>
-                  
-                  {/* Botones de editar y eliminar - visible en mobile, hover en desktop */}
-                  <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
-                    <button
-                      type="button"
-                      onClick={() => handleEditBookmark(link)}
-                      className="p-1.5 hover:bg-blue-100 dark:hover:bg-blue-500/20 rounded-lg transition-colors"
-                      title="Editar"
-                    >
-                      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteBookmark(link.id)}
-                      className="p-1.5 hover:bg-red-100 dark:hover:bg-red-500/20 rounded-lg transition-colors"
-                      title="Eliminar"
-                    >
-                      <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  </div>
+          <div key={categoryIndex} className="card bg-base-100 shadow-xl">
+            <div className="card-body p-4 sm:p-6">
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                  <div className="w-1 h-6 sm:h-8 bg-primary rounded-full flex-shrink-0"></div>
+                  <h2 className="card-title text-lg sm:text-xl truncate">
+                    {categoryData.category}
+                  </h2>
                 </div>
-              ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCategory(categoryData.category);
+                    setSelectedCategoryId(categoryData.id);
+                    setEditingBookmark(null);
+                    setShowBookmarkModal(true);
+                  }}
+                  className="btn btn-primary btn-sm btn-circle"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+
+              <div className="space-y-2 sm:space-y-3">
+                {categoryData.links.map((link) => (
+                  <div
+                    key={link.id}
+                    className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 bg-base-200 rounded-xl hover:bg-primary/10 transition-all duration-300 group"
+                  >
+                    <a
+                      href={`https://${link.site}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0"
+                    >
+                      <div className="avatar">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-base-100 p-1.5">
+                          <img
+                            src={link.icon === "" ? "https://svgl.app/images/svgl_svg.svg" : link.icon}
+                            alt={`${link.name} icon`}
+                          />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold truncate text-xs sm:text-sm group-hover:text-primary transition-colors">
+                          {link.name}
+                        </h3>
+                        <p className="text-[10px] sm:text-xs text-base-content/60 truncate">
+                          {link.site}
+                        </p>
+                      </div>
+                    </a>
+                    
+                    {/* Dropdown Menu */}
+                    <div className="dropdown dropdown-end opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button tabIndex={0} className="btn btn-ghost btn-sm btn-circle">
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                        </svg>
+                      </button>
+                      <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52">
+                        <li>
+                          <a onClick={() => handleEditBookmark(link)}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Editar
+                          </a>
+                        </li>
+                        <li>
+                          <a onClick={() => navigator.clipboard.writeText(link.site)}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            Copiar URL
+                          </a>
+                        </li>
+                        <div className="divider my-0"></div>
+                        <li>
+                          <a className="text-error" onClick={() => handleDeleteBookmark(link.id)}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                            Eliminar
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         ))}
