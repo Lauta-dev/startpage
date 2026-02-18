@@ -1,44 +1,37 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { IconClock } from '@tabler/icons-react';
 
 const Clock: React.FC = () => {
   const [dateTime, setDateTime] = useState(new Date());
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setDateTime(new Date());
-    }, 1000);
-
+    const timer = setInterval(() => setDateTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (date: Date): string => {
-    return date.toLocaleTimeString('es-ES', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
-    });
-  };
+  const formatTime = (date: Date): string =>
+    date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
 
   const formatDate = (date: Date): string => {
-    const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    const months = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
-                   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    
-    const dayName = days[date.getDay()];
-    const day = date.getDate();
-    const monthName = months[date.getMonth()];
-    
-    return `${dayName} ${day} de ${monthName}`;
+    const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    return `${days[date.getDay()]} ${date.getDate()} de ${months[date.getMonth()]}`;
   };
 
   return (
-    <div className="mb-6 sm:mb-8">
-      <div className="text-4xl sm:text-5xl font-bold text-white mb-1">
+    <div className="mb-8 sm:mb-10 pt-2">
+      {/* Hora — Snow Storm nord6 para máximo contraste */}
+      <div className="text-5xl sm:text-6xl font-bold tracking-tight mb-1 flex items-center gap-3"
+           style={{ color: 'var(--nord6)' }}>
+        <IconClock size={44} stroke={1.25} className="hidden sm:block" style={{ color: 'var(--nord3)' }} />
         {formatTime(dateTime)}
       </div>
-      <div className="text-base sm:text-lg text-white/60">
+      {/* Fecha — nord4 más suave */}
+      <div className="text-base sm:text-lg font-light tracking-wide sm:pl-[56px]"
+           style={{ color: 'var(--nord4)' }}>
         {formatDate(dateTime)}
       </div>
     </div>

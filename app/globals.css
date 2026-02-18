@@ -1,19 +1,90 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* ── Nord Color System ───────────────────────────────────────
+   Polar Night  →  backgrounds & surfaces
+   Snow Storm   →  text
+   Frost        →  accents & interactive
+   Aurora       →  semantic states
+──────────────────────────────────────────────────────────── */
+:root {
+  --nord0: #2E3440;
+  --nord1: #3B4252;
+  --nord2: #434C5E;
+  --nord3: #4C566A;
+  --nord4: #D8DEE9;
+  --nord5: #E5E9F0;
+  --nord6: #ECEFF4;
+  --nord7: #8FBCBB;
+  --nord8: #88C0D0;
+  --nord9: #81A1C1;
+  --nord10: #5E81AC;
+  --nord11: #BF616A;
+  --nord12: #D08770;
+  --nord13: #EBCB8B;
+  --nord14: #A3BE8C;
+  --nord15: #B48EAD;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideDown {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(20px); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
 html {
-  background-color: black;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, #313749 0%, #242933 70%);
+  min-height: 100%;
 }
 
 body {
-  background-color: #000000;
+  background: transparent;
   margin: 0;
+  min-height: 100vh;
+  color: var(--nord4);
 }
 
-.abc {
-  background-color: #121212;
-  /* Un paso más arriba en la escala de grises */
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  /* Brillo en el borde */
+.modal-backdrop {
+  background: var(--nord0);
+  opacity: 0.85;
+}
 
+/* Section cards */
+.section-card {
+  border-radius: 1rem;
+  position: relative;
+  background: linear-gradient(135deg, var(--nord1) 0%, var(--nord0) 100%);
+}
+
+/* Borde con gradiente Nord frost */
+.section-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    var(--nord8)  0%,
+    var(--nord2)  50%,
+    var(--nord10) 100%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.3;
 }

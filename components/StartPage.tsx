@@ -1,4 +1,5 @@
 import Clock from '@/components/ui/Clock';
+import SearchBar from '@/components/ui/SearchBar';
 import QuickLinks from '@/components/quick-links/QuickLinks';
 import BookmarkGrid from '@/components/bookmarks/BookmarkGrid';
 import { Bookmark } from '@/lib/types';
@@ -17,10 +18,11 @@ const StartPage = ({
   quickLinks
 }: { bookmarks: Bookmark[], quickLinks: QuickLink[] }) => {
   return (
-    <div className="glass-container rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 m-2 sm:m-4 mx-auto bg-[#121212] border-0 abc">
+    <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
       <Clock />
+      <SearchBar />
       <QuickLinks quickLinks={quickLinks} />
-      <BookmarkGrid bookmarks={bookmarks} /> 
+      <BookmarkGrid bookmarks={bookmarks} />
     </div>
   );
 };
