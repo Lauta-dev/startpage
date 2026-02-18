@@ -1,7 +1,7 @@
 'use client';
 
 import { Bookmark } from '@/lib/types';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { IconX, IconDeviceFloppy, IconPencil, IconWorldWww, IconTag } from '@tabler/icons-react';
 
 interface BookmarkModalProps {
@@ -19,7 +19,24 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const [siteValue, setSiteValue] = useState('');
+  const [nameValue, setNameValue] = useState('');
+
+  // Sync values cuando cambia el bookmark que se está editando o se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      setSiteValue(editingBookmark?.bookmark.site ?? '');
+      setNameValue(editingBookmark?.bookmark.title ?? '');
+    }
+  }, [isOpen, editingBookmark]);
+
   if (!isOpen) return null;
+
+  const isEditing = !!editingBookmark;
+  // Al editar: necesita site Y name. Al crear: solo site.
+  const isDisabled = isEditing
+    ? siteValue.trim() === '' || nameValue.trim() === ''
+    : siteValue.trim() === '';
 
   return (
     <div
@@ -31,7 +48,7 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl p-6"
+        className="w-full max-w-md rounded-2xl p-4 sm:p-6"
         style={{
           background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
           border: '1px solid var(--border)',
@@ -43,7 +60,7 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
         <div className="flex items-center justify-between mb-6">
           <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
             <IconPencil size={20} stroke={1.5} style={{ color: 'var(--accent)' }} />
-            {editingBookmark ? 'Editar Bookmark' : 'Nuevo Bookmark'}
+            {isEditing ? 'Editar Bookmark' : 'Nuevo Bookmark'}
           </h3>
           <button
             type="button"
@@ -57,7 +74,8 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
 
         <form onSubmit={onSubmit}>
           <div className="space-y-4">
-            {editingBookmark?.bookmark.title && (
+            {/* Campo nombre — solo al editar */}
+            {isEditing && (
               <div className="form-control">
                 <label className="label pb-1">
                   <span className="label-text text-xs uppercase tracking-widest font-semibold flex items-center gap-1.5"
@@ -68,10 +86,11 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
                 </label>
                 <input
                   type="text"
-                  placeholder="GitHub"
                   name="name"
-                  defaultValue={editingBookmark.bookmark.title}
-                  className="input w-full rounded-xl text-base focus:outline-none"
+                  value={nameValue}
+                  onChange={e => setNameValue(e.target.value)}
+                  placeholder="GitHub"
+                  className="input w-full rounded-xl text-base focus:outline-none transition-colors"
                   style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                   onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -80,6 +99,7 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
               </div>
             )}
 
+            {/* Campo sitio web — siempre presente */}
             <div className="form-control">
               <label className="label pb-1">
                 <span className="label-text text-xs uppercase tracking-widest font-semibold flex items-center gap-1.5"
@@ -90,10 +110,11 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
               </label>
               <input
                 type="text"
-                placeholder="github.com"
                 name="site"
-                defaultValue={editingBookmark?.bookmark.site || ''}
-                className="input w-full rounded-xl text-base focus:outline-none"
+                value={siteValue}
+                onChange={e => setSiteValue(e.target.value)}
+                placeholder="github.com"
+                className="input w-full rounded-xl text-base focus:outline-none transition-colors"
                 style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
                 onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
@@ -102,27 +123,34 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 mt-6">
+          <div className="flex justify-end gap-2 mt-6 flex-wrap">
             <button
               type="button"
               onClick={onClose}
               className="btn rounded-xl gap-2 border-0 transition-colors"
               style={{ background: 'var(--bg-overlay)', color: 'var(--text-secondary)' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-overlay)')}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--border-subtle)')}
               onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-overlay)')}
             >
               <IconX size={18} />
               Cancelar
             </button>
+
             <button
               type="submit"
-              className="btn rounded-xl gap-2 border-0 font-semibold transition-colors"
-              style={{ background: 'var(--accent)', color: 'var(--accent-text)' }}
-              onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.15)')}
-              onMouseLeave={e => (e.currentTarget.style.filter = 'brightness(1)')}
+              disabled={isDisabled}
+              className="btn rounded-xl gap-2 border-0 font-semibold transition-all duration-200"
+              style={{
+                background: 'var(--accent)',
+                color: 'var(--accent-text)',
+                opacity: isDisabled ? 0.35 : 1,
+                cursor: isDisabled ? 'not-allowed' : 'pointer',
+              }}
+              onMouseEnter={e => { if (!isDisabled) e.currentTarget.style.filter = 'brightness(1.15)'; }}
+              onMouseLeave={e => { e.currentTarget.style.filter = 'brightness(1)'; }}
             >
               <IconDeviceFloppy size={18} />
-              {editingBookmark ? 'Actualizar' : 'Guardar'}
+              {isEditing ? 'Actualizar' : 'Guardar'}
             </button>
           </div>
         </form>

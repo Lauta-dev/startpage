@@ -16,12 +16,14 @@ interface QuickLink {
 
 function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
   const [openModal, setOpenModal] = useState(false);
+  const [urlValue, setUrlValue] = useState('');
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
     await AddQuickLink({ url: data.url as string });
+    setUrlValue('');
     (e.target as HTMLFormElement).reset();
   }
 
@@ -54,7 +56,7 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
               Quick Links
             </h3>
             <button
-              onClick={() => setOpenModal(false)}
+              onClick={() => { setOpenModal(false); setUrlValue(''); }}
               className="btn btn-sm btn-circle btn-ghost transition-colors cursor-pointer"
               style={{ color: 'var(--text-secondary)' }}
             >
@@ -69,26 +71,36 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
               <IconPlus size={14} stroke={2} />
               Añadir enlace
             </p>
-            <form onSubmit={handleSubmit} className="flex gap-2">
+            <form onSubmit={handleSubmit} className="flex sm:flex-row">
               <input
                 type="url"
                 name="url"
+                value={urlValue}
+                onChange={e => setUrlValue(e.target.value)}
                 placeholder="https://ejemplo.com"
-                className="input input-sm flex-1 rounded-lg h-10 text-sm focus:outline-none"
+                className="input input-sm w-full sm:flex-1 rounded-lg h-10 text-sm focus:outline-none"
                 style={{
                   background: 'var(--bg-elevated)',
                   border: '1px solid var(--border)',
                   color: 'var(--text-primary)',
+                  borderRadius: "10px 0 0 10px"
                 }}
                 onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                 onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               />
               <button
                 type="submit"
-                className="btn btn-sm rounded-lg gap-1.5 h-10 border-0 font-semibold"
-                style={{ background: 'var(--accent)', color: 'var(--accent-text)' }}
-                onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.15)')}
-                onMouseLeave={e => (e.currentTarget.style.filter = 'brightness(1)')}
+                disabled={urlValue.trim() === ''}
+                className="btn btn-sm sm:w-auto rounded-lg gap-1.5 h-10 border-0 font-semibold transition-opacity duration-200"
+                style={{
+                  background: 'var(--accent)',
+                  color: 'var(--accent-text)',
+                  opacity: urlValue.trim() === '' ? 0.35 : 1,
+                  cursor: urlValue.trim() === '' ? 'not-allowed' : 'pointer',
+                  borderRadius: "0px 10px 10px 0px"
+                }}
+                onMouseEnter={e => { if (urlValue.trim() !== '') e.currentTarget.style.filter = 'brightness(1.15)'; }}
+                onMouseLeave={e => { e.currentTarget.style.filter = 'brightness(1)'; }}
               >
                 <IconPlus size={16} />
                 Añadir
@@ -104,7 +116,7 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
                 <IconTrash size={14} stroke={1.5} />
                 Eliminar enlace
               </p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2">
                 {quickLinks.map((link) => (
                   <button
                     key={link.id}

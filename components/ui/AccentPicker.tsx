@@ -98,7 +98,7 @@ const AccentPicker: React.FC = () => {
       {/* Dropdown */}
       {open && (
         <div
-          className="absolute right-0 mt-2 w-48 rounded-xl overflow-hidden z-50"
+          className="absolute right-0 mt-2 w-48 rounded-xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
           style={{
             background: 'var(--bg-surface)',
             border: '1px solid var(--border)',
