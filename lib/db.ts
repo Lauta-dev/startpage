@@ -1,13 +1,8 @@
-import { createClient } from '@libsql/client';
-
-const isDev = process.env.NODE_ENV === 'development';
+// Prueba este import específico si el general falla en Bun
+import { createClient } from "@libsql/client"; 
 
 const client = createClient({
-  url: isDev 
-    ? "file:./mydatabase.db" 
-    : (process.env.TURSO_DATABASE_URL || ""),
-  // El token solo es necesario en producción para Turso
-  authToken: isDev ? undefined : process.env.TURSO_AUTH_TOKEN
+  url: "file:mydatabase.db",
 });
 
 export default client

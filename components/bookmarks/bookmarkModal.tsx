@@ -1,19 +1,12 @@
 'use client';
 
+import { Bookmark,  } from '@/lib/types';
 import React from 'react';
-
-interface Link {
-  name: string;
-  icon: string;
-  site: string;
-  id: number;
-}
 
 interface BookmarkModalProps {
   isOpen: boolean;
   isClosing: boolean;
-  selectedCategory: string | null;
-  editingBookmark: {categoryIndex: number, linkIndex: number, link: Link} | null;
+  editingBookmark: {id: number, bookmark: Bookmark} | null;
   onClose: () => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }
@@ -21,7 +14,6 @@ interface BookmarkModalProps {
 const BookmarkModal: React.FC<BookmarkModalProps> = ({
   isOpen,
   isClosing,
-  selectedCategory,
   editingBookmark,
   onClose,
   onSubmit
@@ -42,9 +34,6 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
             <h3 className="text-xl sm:text-2xl font-bold truncate">
               {editingBookmark ? 'Editar Bookmark' : 'Nuevo Bookmark'}
             </h3>
-            <p className="text-xs sm:text-sm opacity-60 mt-1 truncate">
-              En: {selectedCategory}
-            </p>
           </div>
           <button 
             type="button"
@@ -57,7 +46,9 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
 
         <form onSubmit={onSubmit}>
           <div className="space-y-4">
-            <div className="form-control">
+
+            {editingBookmark?.bookmark.title ? (
+              <div className="form-control">
               <label className="label">
                 <span className="label-text font-semibold">Nombre</span>
               </label>
@@ -65,11 +56,12 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
                 type="text"
                 placeholder="GitHub"
                 name="name"
-                defaultValue={editingBookmark?.link.name || ''}
+                defaultValue={editingBookmark?.bookmark.title || ''}
                 className="input input-bordered w-full"
                 required
               />
             </div>
+            ) : <></>}
             
             <div className="form-control">
               <label className="label">
@@ -79,7 +71,7 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
                 type="text"
                 placeholder="github.com"
                 name="site"
-                defaultValue={editingBookmark?.link.site || ''}
+                defaultValue={editingBookmark?.bookmark.site || ''}
                 className="input input-bordered w-full"
                 required
               />

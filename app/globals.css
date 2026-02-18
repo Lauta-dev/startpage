@@ -1,2 +1,19 @@
 @import "tailwindcss";
 @plugin "daisyui";
+
+html {
+  background-color: black;
+}
+
+body {
+  background-color: #000000;
+  margin: 0;
+}
+
+.abc {
+  background-color: #121212;
+  /* Un paso más arriba en la escala de grises */
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  /* Brillo en el borde */
+
+}

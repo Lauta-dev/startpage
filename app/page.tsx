@@ -1,23 +1,11 @@
-import Aaa from "@/actions/getBookmark";
-import BookmarkList from "@/components/bookmarksList";
-import DateTimeDisplay from "@/components/DateTimeDisplay";
-
 export const dynamic = 'force-dynamic';
 
+import getBookmarks from '@/actions/getBookmark';
+import GetQuickLinks from '@/actions/getQuickLinks';
+import StartPage from '@/components/StartPage';
+
 export default async function Home() {
-  const data = await Aaa()
-  
-  return (
-     <main className="min-h-screen flex flex-col transition-colors">
-
-     
-      {/* Date & Time Display */}
-      <DateTimeDisplay />
-
-      {/* Content - Centrado vertical y horizontalmente */}
-      <div className="flex-1 flex items-center justify-center">
-        <BookmarkList data={data} />
-      </div>
-    </main>
-  );
+  const bookmarks = await getBookmarks()
+  const x = await GetQuickLinks()
+  return <StartPage bookmarks={bookmarks} quickLinks={x.res}  />;
 }

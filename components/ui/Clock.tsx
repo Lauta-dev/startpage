@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 
-const DateTimeDisplay: React.FC = () => {
+const Clock: React.FC = () => {
   const [dateTime, setDateTime] = useState(new Date());
 
   useEffect(() => {
@@ -34,15 +34,15 @@ const DateTimeDisplay: React.FC = () => {
   };
 
   return (
-    <div className="text-center py-8">
-      <div className="text-7xl font-bold text-base-content mb-2">
+    <div className="mb-6 sm:mb-8">
+      <div className="text-4xl sm:text-5xl font-bold text-white mb-1">
         {formatTime(dateTime)}
       </div>
-      <div className="text-2xl text-base-content/60 font-medium">
+      <div className="text-base sm:text-lg text-white/60">
         {formatDate(dateTime)}
       </div>
     </div>
   );
 };
 
-export default DateTimeDisplay;
+export default Clock;

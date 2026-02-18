@@ -1,33 +1,62 @@
 import * as cheerio from 'cheerio';
 
-async function getFavicon(url: string) {
-
-  if (!url.startsWith("https://")){
-    url = `https://${url}`
+export async function getUrlMetadata(url: string) {
+  // 1. Limpieza básica de la URL
+  let targetUrl = url.trim();
+  if (!targetUrl.startsWith("https")) {
+    targetUrl = `https://${targetUrl}`;
   }
 
   try {
-    const response = await fetch(url);
+    // 2. Fetch con timeout para que no se cuelgue tu server
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000); // 5 segundos max
+
+    const response = await fetch(targetUrl, { 
+      signal: controller.signal,
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GeminiBot/1.0)' } 
+    });
+    
+    clearTimeout(timeout);
     const html = await response.text();
     const $ = cheerio.load(html);
 
-    // Buscamos en las etiquetas link más comunes
-    const icon = 
+    // 3. Extraer Título (Prioridad: OG -> Title tag)
+    const title = 
+      $('meta[property="og:title"]').attr('content') || 
+      $('title').text() || 
+      new URL(targetUrl).hostname;
+
+    // 4. Extraer Imagen OG (Banner)
+    const ogImage = $('meta[property="og:image"]').attr('content');
+
+    // 5. Extraer Favicon (Lógica mejorada)
+    const iconHref = 
+      $('link[rel="apple-touch-icon"]').attr('href') ||
       $('link[rel="icon"]').attr('href') ||
-      $('link[rel="shortcut icon"]').attr('href') ||
-      $('link[rel="apple-touch-icon"]').attr('href');
+      $('link[rel="shortcut icon"]').attr('href');
 
-    if (icon) {
-      // Si la ruta es relativa (ej: /favicon.ico), la convertimos en absoluta
-      return new URL(icon, url).href;
-    }
+    const favicon = iconHref 
+      ? new URL(iconHref, targetUrl).href 
+      : `${new URL(targetUrl).origin}/favicon.ico`;
 
-    // Si no encuentra nada, fallback al favicon estándar
-    return `${new URL(url).origin}/favicon.ico`;
+    return {
+      title: title.trim(),
+      favicon,
+      ogImage: ogImage ? new URL(ogImage, targetUrl).href : null,
+      url: targetUrl
+    };
+
   } catch (error) {
-    console.log("[getFavicon] ", error)
-    return "";
+    console.error("[getUrlMetadata] Error:", targetUrl, error);
+    // Fallback básico si falla el fetch
+    return {
+      title: new URL(targetUrl).hostname,
+      favicon: `${new URL(targetUrl).origin}/favicon.ico`,
+      ogImage: null,
+      url: targetUrl
+    };
   }
 }
 
-export default getFavicon
+getUrlMetadata("https://youtube.com")
