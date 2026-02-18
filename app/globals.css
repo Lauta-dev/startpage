@@ -24,6 +24,41 @@
   --nord13: #EBCB8B;
   --nord14: #A3BE8C;
   --nord15: #B48EAD;
+
+  /* Accent — default frost blue, overridden by AccentPicker */
+  --accent: #88C0D0;
+  /* Texto sobre accent — recalculado por JS según contraste WCAG */
+  --accent-text: #2E3440;
+
+  /* ── Semantic surface tokens (dark mode defaults) ── */
+  --bg-base:      #242933;
+  --bg-elevated:  #2E3440;
+  --bg-surface:   #3B4252;
+  --bg-overlay:   #434C5E;
+  --text-primary:   #ECEFF4;
+  --text-secondary: #D8DEE9;
+  --text-muted:     #4C566A;
+  --border-subtle:  #434C5E;
+  --border-dim:     #3B4252;
+  --border:         #434C5E;
+  --modal-backdrop: rgba(46, 52, 64, 0.85);
+}
+
+/* ── Light mode token overrides ─────────────────────────────
+   Snow Storm becomes backgrounds, Polar Night becomes text
+──────────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-base:      #E5E9F0;
+  --bg-elevated:  #ECEFF4;
+  --bg-surface:   #D8DEE9;
+  --bg-overlay:   #C8D0DC;
+  --text-primary:   #2E3440;
+  --text-secondary: #3B4252;
+  --text-muted:     #9AA0AA;
+  --border-subtle:  #C0C8D4;
+  --border-dim:     #D0D8E4;
+  --border:         #C0C8D4;
+  --modal-backdrop: rgba(46, 52, 64, 0.5);
 }
 
 @keyframes slideUp {
@@ -46,25 +81,31 @@
 html {
   background: radial-gradient(ellipse 80% 60% at 50% 0%, #313749 0%, #242933 70%);
   min-height: 100%;
+  transition: background 0.3s ease;
+}
+
+html[data-theme="light"] {
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, #D0D8E4 0%, #E5E9F0 70%);
 }
 
 body {
   background: transparent;
   margin: 0;
   min-height: 100vh;
-  color: var(--nord4);
+  color: var(--text-secondary);
+  transition: color 0.3s ease, background 0.3s ease;
 }
 
 .modal-backdrop {
-  background: var(--nord0);
-  opacity: 0.85;
+  background: var(--modal-backdrop);
 }
 
 /* Section cards */
 .section-card {
   border-radius: 1rem;
   position: relative;
-  background: linear-gradient(135deg, var(--nord1) 0%, var(--nord0) 100%);
+  background: linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%);
+  transition: background 0.3s ease;
 }
 
 /* Borde con gradiente Nord frost */
@@ -76,9 +117,9 @@ body {
   padding: 1px;
   background: linear-gradient(
     135deg,
-    var(--nord8)  0%,
-    var(--nord2)  50%,
-    var(--nord10) 100%
+    var(--accent)  0%,
+    var(--border)  50%,
+    var(--accent) 100%
   );
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
@@ -87,4 +128,32 @@ body {
   mask-composite: exclude;
   pointer-events: none;
   opacity: 0.3;
+}
+
+/* Botones apagados en desktop, encendidos en mobile y al hover */
+.dim-btn {
+  color: var(--accent); /* encendido en mobile (base) */
+}
+
+@media (min-width: 640px) {
+  .dim-btn {
+    color: var(--text-muted);
+  }
+  .dim-btn:hover {
+    color: var(--accent); /* encendido al hover en desktop */
+  }
+}
+
+/* Evita el flash blanco al abrir modales con modal-open */
+.modal {
+  background: transparent;
+}
+
+.modal.modal-open {
+  background: transparent;
+}
+
+/* Backdrop nativo del <dialog> */
+dialog::backdrop {
+  background: var(--modal-backdrop);
 }

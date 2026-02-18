@@ -17,7 +17,7 @@ const SearchBar: React.FC = () => {
         size={20}
         stroke={1.5}
         className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none"
-        style={{ color: 'var(--nord3)' }}
+        style={{ color: 'var(--text-muted)' }}
       />
       <input
         type="text"
@@ -25,12 +25,12 @@ const SearchBar: React.FC = () => {
         onKeyDown={handleKeyDown}
         className="input w-full pl-11 h-12 rounded-xl text-base transition-all focus:outline-none"
         style={{
-          background: 'var(--nord1)',
-          border: '1px solid var(--nord2)',
-          color: 'var(--nord5)',
+          background: 'var(--bg-surface)',
+          border: '1px solid var(--border)',
+          color: 'var(--text-primary)',
         }}
-        onFocus={e => (e.currentTarget.style.borderColor = 'var(--nord8)')}
-        onBlur={e => (e.currentTarget.style.borderColor = 'var(--nord2)')}
+        onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+        onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
       />
     </div>
   );

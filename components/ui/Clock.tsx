@@ -22,16 +22,14 @@ const Clock: React.FC = () => {
   };
 
   return (
-    <div className="mb-8 sm:mb-10 pt-2">
-      {/* Hora — Snow Storm nord6 para máximo contraste */}
+    <div>
       <div className="text-5xl sm:text-6xl font-bold tracking-tight mb-1 flex items-center gap-3"
-           style={{ color: 'var(--nord6)' }}>
-        <IconClock size={44} stroke={1.25} className="hidden sm:block" style={{ color: 'var(--nord3)' }} />
+           style={{ color: 'var(--text-primary)' }}>
+        <IconClock size={44} stroke={1.25} className="hidden sm:block" style={{ color: 'var(--text-muted)' }} />
         {formatTime(dateTime)}
       </div>
-      {/* Fecha — nord4 más suave */}
       <div className="text-base sm:text-lg font-light tracking-wide sm:pl-[56px]"
-           style={{ color: 'var(--nord4)' }}>
+           style={{ color: 'var(--text-secondary)' }}>
         {formatDate(dateTime)}
       </div>
     </div>

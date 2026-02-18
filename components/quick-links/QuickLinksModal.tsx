@@ -33,10 +33,7 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
     <>
       <button
         onClick={() => setOpenModal(true)}
-        className="flex items-center gap-2 text-xs font-medium transition-colors cursor-pointer"
-        style={{ color: 'var(--nord4)' }}
-        onMouseEnter={e => (e.currentTarget.style.color = 'var(--nord4)')}
-        onMouseLeave={e => (e.currentTarget.style.color = 'var(--nord4)')}
+        className="dim-btn flex items-center gap-2 text-xs font-medium transition-colors duration-200 cursor-pointer"
       >
         <IconSettings size={18} stroke={1.5} />
         Gestionar
@@ -46,22 +43,20 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
         <div
           className="modal-box rounded-2xl flex flex-col gap-6 w-11/12 max-w-2xl"
           style={{
-            background: `linear-gradient(135deg, var(--nord1) 0%, var(--nord0) 100%)`,
-            border: '1px solid var(--nord2)',
+            background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
+            border: '1px solid var(--border)',
           }}
         >
           {/* Header */}
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: 'var(--nord6)' }}>
-              <IconLink size={20} stroke={1.5} style={{ color: 'var(--nord8)' }} />
+            <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+              <IconLink size={20} stroke={1.5} style={{ color: 'var(--accent)' }} />
               Quick Links
             </h3>
             <button
               onClick={() => setOpenModal(false)}
               className="btn btn-sm btn-circle btn-ghost transition-colors cursor-pointer"
-              style={{ color: 'var(--nord4)' }}
-              onMouseEnter={e => (e.currentTarget.style.color = 'var(--nord4)')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'var(--nord4)')}
+              style={{ color: 'var(--text-secondary)' }}
             >
               <IconX size={18} />
             </button>
@@ -70,7 +65,7 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
           {/* Añadir nuevo */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-1.5"
-               style={{ color: 'var(--nord4)' }}>
+               style={{ color: 'var(--text-secondary)' }}>
               <IconPlus size={14} stroke={2} />
               Añadir enlace
             </p>
@@ -81,19 +76,19 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
                 placeholder="https://ejemplo.com"
                 className="input input-sm flex-1 rounded-lg h-10 text-sm focus:outline-none"
                 style={{
-                  background: 'var(--nord0)',
-                  border: '1px solid var(--nord2)',
-                  color: 'var(--nord5)',
+                  background: 'var(--bg-elevated)',
+                  border: '1px solid var(--border)',
+                  color: 'var(--text-primary)',
                 }}
-                onFocus={e => (e.currentTarget.style.borderColor = 'var(--nord8)')}
-                onBlur={e => (e.currentTarget.style.borderColor = 'var(--nord2)')}
+                onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
               />
               <button
                 type="submit"
                 className="btn btn-sm rounded-lg gap-1.5 h-10 border-0 font-semibold"
-                style={{ background: 'var(--nord10)', color: 'var(--nord6)' }}
-                onMouseEnter={e => (e.currentTarget.style.background = 'var(--nord9)')}
-                onMouseLeave={e => (e.currentTarget.style.background = 'var(--nord10)')}
+                style={{ background: 'var(--accent)', color: 'var(--accent-text)' }}
+                onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.15)')}
+                onMouseLeave={e => (e.currentTarget.style.filter = 'brightness(1)')}
               >
                 <IconPlus size={16} />
                 Añadir
@@ -105,7 +100,7 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
           {quickLinks.length > 0 && (
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-1.5"
-                 style={{ color: 'var(--nord4)' }}>
+                 style={{ color: 'var(--text-secondary)' }}>
                 <IconTrash size={14} stroke={1.5} />
                 Eliminar enlace
               </p>
@@ -116,24 +111,24 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
                     onClick={() => handleDeleteItem(link.id)}
                     className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group cursor-pointer"
                     style={{
-                      background: 'var(--nord1)',
-                      border: '1px solid var(--nord2)',
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--border)',
                     }}
                     onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'var(--nord2)';
+                      (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
                       (e.currentTarget as HTMLElement).style.borderColor = 'var(--nord11)';
                     }}
                     onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'var(--nord1)';
-                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--nord2)';
+                      (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
+                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
                     }}
                   >
                     <div className="w-7 h-7 rounded-lg p-1.5 flex-shrink-0 flex items-center justify-center"
-                         style={{ background: 'var(--nord0)' }}>
+                         style={{ background: 'var(--bg-elevated)' }}>
                       <img src={link?.icon ?? ""} alt={link.name} className="w-full h-full object-contain" />
                     </div>
-                    <span className="font-medium truncate text-sm flex-1 text-left transition-colors"
-                          style={{ color: 'var(--nord4)' }}>
+                    <span className="font-medium truncate text-sm flex-1 text-left"
+                          style={{ color: 'var(--text-secondary)' }}>
                       {link.name}
                     </span>
                     <IconTrash size={16} className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"

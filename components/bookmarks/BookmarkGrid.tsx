@@ -50,28 +50,13 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
       {/* Header */}
       <div className="flex justify-between items-center mb-5">
         <h3 className="text-xs font-semibold uppercase tracking-widest flex items-center gap-2"
-            style={{ color: 'var(--nord4)' }}>
+            style={{ color: 'var(--text-secondary)' }}>
           <IconBook2 size={18} stroke={1.5} />
           Bookmarks
         </h3>
         <button
           onClick={() => { setEditingBookmark(null); setShowBookmarkModal(true); }}
-          className="flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all duration-200 cursor-pointer"
-          style={{
-            background: 'var(--nord2)',
-            border: '1px solid var(--nord3)',
-            color: 'var(--nord9)',
-          }}
-          onMouseEnter={e => {
-            (e.currentTarget as HTMLElement).style.background = 'var(--nord3)';
-            (e.currentTarget as HTMLElement).style.borderColor = 'var(--nord10)';
-            (e.currentTarget as HTMLElement).style.color = 'var(--nord8)';
-          }}
-          onMouseLeave={e => {
-            (e.currentTarget as HTMLElement).style.background = 'var(--nord2)';
-            (e.currentTarget as HTMLElement).style.borderColor = 'var(--nord3)';
-            (e.currentTarget as HTMLElement).style.color = 'var(--nord9)';
-          }}
+          className="dim-btn flex items-center gap-2 text-xs font-medium transition-colors duration-200 cursor-pointer"
         >
           <IconCirclePlus size={18} stroke={1.5} />
           Añadir bookmark
@@ -88,11 +73,11 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
             rel="noopener noreferrer"
             className="group block rounded-xl overflow-hidden transition-all duration-200"
             style={{
-              background: 'var(--nord1)',
-              border: '1px solid var(--nord2)',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
             }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--nord8)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--nord2)')}
+            onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+            onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
           >
             {/* Imagen */}
             <div className="relative overflow-hidden aspect-video">
@@ -106,14 +91,14 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteBookmark(bookmark.id); }}
                   className="p-2 rounded-lg transition-colors cursor-pointer"
-                  style={{ background: 'var(--nord0)', color: 'var(--nord4)' }}
+                  style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
                   onMouseEnter={e => {
                     (e.currentTarget as HTMLElement).style.background = 'var(--nord11)';
-                    (e.currentTarget as HTMLElement).style.color = 'var(--nord6)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--nord0)';
-                    (e.currentTarget as HTMLElement).style.color = 'var(--nord4)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
                   }}
                 >
                   <IconTrash size={18} />
@@ -121,14 +106,14 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
                 <button
                   onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleEditBookmark({ bookmark, id: bookmark.id }); }}
                   className="p-2 rounded-lg transition-colors cursor-pointer"
-                  style={{ background: 'var(--nord0)', color: 'var(--nord4)' }}
+                  style={{ background: 'var(--bg-elevated)', color: 'var(--text-secondary)' }}
                   onMouseEnter={e => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--nord10)';
-                    (e.currentTarget as HTMLElement).style.color = 'var(--nord6)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--accent)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--accent-text)';
                   }}
                   onMouseLeave={e => {
-                    (e.currentTarget as HTMLElement).style.background = 'var(--nord0)';
-                    (e.currentTarget as HTMLElement).style.color = 'var(--nord4)';
+                    (e.currentTarget as HTMLElement).style.background = 'var(--bg-elevated)';
+                    (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
                   }}
                 >
                   <IconEdit size={18} />
@@ -138,10 +123,10 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
 
             {/* Info */}
             <div className="p-3">
-              <h2 className="font-semibold text-sm truncate mb-0.5" style={{ color: 'var(--nord5)' }}>
+              <h2 className="font-semibold text-sm truncate mb-0.5" style={{ color: 'var(--text-primary)' }}>
                 {bookmark.title}
               </h2>
-              <p className="text-xs truncate" style={{ color: 'var(--nord4)' }}>{bookmark.site}</p>
+              <p className="text-xs truncate" style={{ color: 'var(--text-secondary)' }}>{bookmark.site}</p>
             </div>
           </a>
         ))}

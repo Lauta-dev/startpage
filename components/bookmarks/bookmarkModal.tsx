@@ -22,28 +22,34 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal modal-open">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{
+        background: 'var(--modal-backdrop)',
+        animation: isClosing ? 'fadeOut 0.15s ease-in' : 'fadeIn 0.15s ease-out',
+      }}
+      onClick={onClose}
+    >
       <div
-        className="modal-box rounded-2xl"
+        className="w-full max-w-md rounded-2xl p-6"
         style={{
-          background: `linear-gradient(135deg, var(--nord1) 0%, var(--nord0) 100%)`,
-          border: '1px solid rgba(136, 192, 208, 0.15)',
+          background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
+          border: '1px solid var(--border)',
           animation: isClosing ? 'slideDown 0.15s ease-in' : 'slideUp 0.15s ease-out',
         }}
+        onClick={e => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--nord6)' }}>
-            <IconPencil size={20} stroke={1.5} style={{ color: 'var(--nord8)' }} />
+          <h3 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+            <IconPencil size={20} stroke={1.5} style={{ color: 'var(--accent)' }} />
             {editingBookmark ? 'Editar Bookmark' : 'Nuevo Bookmark'}
           </h3>
           <button
             type="button"
             onClick={onClose}
             className="btn btn-sm btn-circle btn-ghost transition-colors"
-            style={{ color: 'var(--nord4)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'var(--nord4)')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--nord4)')}
+            style={{ color: 'var(--text-secondary)' }}
           >
             <IconX size={18} />
           </button>
@@ -55,7 +61,7 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
               <div className="form-control">
                 <label className="label pb-1">
                   <span className="label-text text-xs uppercase tracking-widest font-semibold flex items-center gap-1.5"
-                        style={{ color: 'var(--nord4)' }}>
+                        style={{ color: 'var(--text-secondary)' }}>
                     <IconTag size={14} stroke={1.5} />
                     Nombre
                   </span>
@@ -66,13 +72,9 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
                   name="name"
                   defaultValue={editingBookmark.bookmark.title}
                   className="input w-full rounded-xl text-base focus:outline-none"
-                  style={{
-                    background: 'var(--nord0)',
-                    border: '1px solid var(--nord2)',
-                    color: 'var(--nord5)',
-                  }}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'var(--nord8)')}
-                  onBlur={e => (e.currentTarget.style.borderColor = 'var(--nord2)')}
+                  style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+                  onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                   required
                 />
               </div>
@@ -81,7 +83,7 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
             <div className="form-control">
               <label className="label pb-1">
                 <span className="label-text text-xs uppercase tracking-widest font-semibold flex items-center gap-1.5"
-                      style={{ color: 'var(--nord4)' }}>
+                      style={{ color: 'var(--text-secondary)' }}>
                   <IconWorldWww size={14} stroke={1.5} />
                   Sitio web
                 </span>
@@ -92,26 +94,22 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
                 name="site"
                 defaultValue={editingBookmark?.bookmark.site || ''}
                 className="input w-full rounded-xl text-base focus:outline-none"
-                style={{
-                  background: 'var(--nord0)',
-                  border: '1px solid var(--nord2)',
-                  color: 'var(--nord5)',
-                }}
-                onFocus={e => (e.currentTarget.style.borderColor = 'var(--nord8)')}
-                onBlur={e => (e.currentTarget.style.borderColor = 'var(--nord2)')}
+                style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', color: 'var(--text-primary)' }}
+                onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+                onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                 required
               />
             </div>
           </div>
 
-          <div className="modal-action mt-6 gap-2">
+          <div className="flex justify-end gap-2 mt-6">
             <button
               type="button"
               onClick={onClose}
               className="btn rounded-xl gap-2 border-0 transition-colors"
-              style={{ background: 'var(--nord2)', color: 'var(--nord4)' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--nord3)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--nord2)')}
+              style={{ background: 'var(--bg-overlay)', color: 'var(--text-secondary)' }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-overlay)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-overlay)')}
             >
               <IconX size={18} />
               Cancelar
@@ -119,9 +117,9 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
             <button
               type="submit"
               className="btn rounded-xl gap-2 border-0 font-semibold transition-colors"
-              style={{ background: 'var(--nord10)', color: 'var(--nord6)' }}
-              onMouseEnter={e => (e.currentTarget.style.background = 'var(--nord9)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--nord10)')}
+              style={{ background: 'var(--accent)', color: 'var(--accent-text)' }}
+              onMouseEnter={e => (e.currentTarget.style.filter = 'brightness(1.15)')}
+              onMouseLeave={e => (e.currentTarget.style.filter = 'brightness(1)')}
             >
               <IconDeviceFloppy size={18} />
               {editingBookmark ? 'Actualizar' : 'Guardar'}
@@ -129,12 +127,6 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
           </div>
         </form>
       </div>
-
-      <div
-        className="modal-backdrop"
-        onClick={onClose}
-        style={{ animation: isClosing ? 'fadeOut 0.15s ease-in' : 'fadeIn 0.15s ease-out' }}
-      />
     </div>
   );
 };

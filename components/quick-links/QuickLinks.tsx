@@ -17,7 +17,7 @@ const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => {
     <div className="section-card p-4 sm:p-5 mb-4 sm:mb-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-xs font-semibold uppercase tracking-widest flex items-center gap-2"
-            style={{ color: 'var(--nord4)' }}>
+            style={{ color: 'var(--text-secondary)' }}>
           <IconLink size={18} stroke={1.5} />
           Quick Links
         </h3>
@@ -33,23 +33,23 @@ const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => {
             rel="noopener noreferrer"
             className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group"
             style={{
-              background: 'var(--nord1)',
-              border: '1px solid var(--nord2)',
+              background: 'var(--bg-surface)',
+              border: '1px solid var(--border)',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--nord2)';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--nord10)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--nord1)';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--nord2)';
+              (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
             }}
           >
             <div className="w-8 h-8 rounded-lg p-1.5 flex-shrink-0 flex items-center justify-center"
-                 style={{ background: 'var(--nord0)' }}>
+                 style={{ background: 'var(--bg-elevated)' }}>
               <img src={link?.icon ?? ""} alt={link.name} className="w-full h-full object-contain" />
             </div>
-            <h3 className="font-medium truncate text-sm transition-colors" style={{ color: 'var(--nord4)' }}>
+            <h3 className="font-medium truncate text-sm transition-colors" style={{ color: 'var(--text-secondary)' }}>
               {link.name}
             </h3>
           </a>
