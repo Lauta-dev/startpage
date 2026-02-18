@@ -38,7 +38,6 @@ function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
         className="dim-btn flex items-center gap-2 text-xs font-medium transition-colors duration-200 cursor-pointer"
       >
         <IconSettings size={18} stroke={1.5} />
-        Gestionar
       </button>
 
       <dialog open={openModal} className="modal">
