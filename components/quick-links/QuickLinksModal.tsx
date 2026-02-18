@@ -57,7 +57,7 @@ function QuickLinksModal({quickLinks}: {quickLinks:QuickLink[]}) {
               <button key={link.id} onClick={() => handleDeleteItem(link.id)} className="btn-ghost flex items-center gap-2 p-0 sm:gap-3 sm:p-3 bg-base-200/50 rounded-xl hover:bg-error/20 hover:border-error hover:text-error transition-all duration-300 group quick-link-btn border border-transparent">
               <div className="avatar">
                 <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-base-100/50 p-1.5 sm:p-2">
-                  <img src={link.icon} alt={link.name} />
+                  <img src={link?.icon ?? ""} alt={link.name} />
                 </div>
               </div>
               <div className="flex-1 min-w-0 justify-between items-center flex">
