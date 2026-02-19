@@ -8,6 +8,7 @@ export async function CreateBookmark(url: string) {
   const sql = `INSERT INTO bookmarks (title, url, og_image, og_description) VALUES (?,?,?,?)`
   const { title, url: site, ogImage } = await getUrlMetadata(url)
 
+
   try {
     const result = await client.execute({
       sql, args: [title, site, ogImage, "abc"]
