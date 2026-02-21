@@ -31,16 +31,16 @@
   --accent-text: #2E3440;
 
   /* ── Semantic surface tokens (dark mode defaults) ── */
-  --bg-base:      #242933;
-  --bg-elevated:  #2E3440;
-  --bg-surface:   #3B4252;
-  --bg-overlay:   #434C5E;
-  --text-primary:   #ECEFF4;
+  --bg-base: #242933;
+  --bg-elevated: #2E3440;
+  --bg-surface: #3B4252;
+  --bg-overlay: #434C5E;
+  --text-primary: #ECEFF4;
   --text-secondary: #D8DEE9;
-  --text-muted:     #4C566A;
-  --border-subtle:  #434C5E;
-  --border-dim:     #3B4252;
-  --border:         #434C5E;
+  --text-muted: #4C566A;
+  --border-subtle: #434C5E;
+  --border-dim: #3B4252;
+  --border: #434C5E;
   --modal-backdrop: rgba(46, 52, 64, 0.85);
 }
 
@@ -48,34 +48,61 @@
    Snow Storm becomes backgrounds, Polar Night becomes text
 ──────────────────────────────────────────────────────────── */
 [data-theme="light"] {
-  --bg-base:      #E5E9F0;
-  --bg-elevated:  #ECEFF4;
-  --bg-surface:   #D8DEE9;
-  --bg-overlay:   #C8D0DC;
-  --text-primary:   #2E3440;
+  --bg-base: #E5E9F0;
+  --bg-elevated: #ECEFF4;
+  --bg-surface: #D8DEE9;
+  --bg-overlay: #C8D0DC;
+  --text-primary: #2E3440;
   --text-secondary: #3B4252;
-  --text-muted:     #9AA0AA;
-  --border-subtle:  #C0C8D4;
-  --border-dim:     #D0D8E4;
-  --border:         #C0C8D4;
+  --text-muted: #9AA0AA;
+  --border-subtle: #C0C8D4;
+  --border-dim: #D0D8E4;
+  --border: #C0C8D4;
   --modal-backdrop: rgba(46, 52, 64, 0.5);
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
+
 @keyframes slideDown {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(20px); }
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
 }
+
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 @keyframes fadeOut {
-  from { opacity: 1; }
-  to   { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 html {
@@ -115,12 +142,10 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(
-    135deg,
-    var(--accent)  0%,
-    var(--border)  50%,
-    var(--accent) 100%
-  );
+  background: linear-gradient(135deg,
+      var(--accent) 0%,
+      var(--border) 50%,
+      var(--accent) 100%);
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -132,15 +157,18 @@ body {
 
 /* Botones apagados en desktop, encendidos en mobile y al hover */
 .dim-btn {
-  color: var(--accent); /* encendido en mobile (base) */
+  color: var(--accent);
+  /* encendido en mobile (base) */
 }
 
 @media (min-width: 640px) {
   .dim-btn {
     color: var(--text-muted);
   }
+
   .dim-btn:hover {
-    color: var(--accent); /* encendido al hover en desktop */
+    color: var(--accent);
+    /* encendido al hover en desktop */
   }
 }
 
@@ -156,4 +184,121 @@ body {
 /* Backdrop nativo del <dialog> */
 dialog::backdrop {
   background: var(--modal-backdrop);
+}
+
+/* ─────────────────────────────────────────
+   Bang pill — integrated into the search bar
+   No border, no background: feels like part
+   of the input itself.
+───────────────────────────────────────── */
+
+.bang-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 6px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  overflow: hidden;
+  cursor: pointer;
+
+  /* open state */
+  max-width: 0;
+  opacity: 0;
+  animation: bang-pill-reveal 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ── open ── */
+@keyframes bang-pill-reveal {
+  0% {
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    gap: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    max-width: 220px;
+    opacity: 1;
+    padding-left: 6px;
+    gap: 6px;
+  }
+}
+
+/* ── close ── */
+.bang-pill--closing {
+  animation: bang-pill-collapse 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes bang-pill-collapse {
+  0% {
+    max-width: 220px;
+    opacity: 1;
+    padding-left: 6px;
+    gap: 6px;
+  }
+
+  45% {
+    opacity: 0;
+  }
+
+  100% {
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    gap: 0;
+  }
+}
+
+/* ── children fade in staggered on open ── */
+.bang-pill__icon {
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0;
+  animation: bang-fade-in 0.15s ease 0.18s forwards;
+}
+
+.bang-pill__name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  opacity: 0;
+  animation: bang-fade-in 0.15s ease 0.22s forwards;
+}
+
+/* vertical rule between pill and text cursor */
+.bang-pill__divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin-left: 2px;
+  opacity: 0;
+  animation: bang-fade-in 0.15s ease 0.26s forwards;
+}
+
+@keyframes bang-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── children fade out instantly on close ── */
+.bang-pill--closing .bang-pill__icon,
+.bang-pill--closing .bang-pill__name,
+.bang-pill--closing .bang-pill__divider {
+  animation: bang-fade-out 0.1s ease forwards;
+}
+
+@keyframes bang-fade-out {
+  to {
+    opacity: 0;
+  }
 }

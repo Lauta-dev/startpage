@@ -90,6 +90,7 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
             className="dim-btn flex items-center gap-2 text-xs font-medium transition-colors duration-200 cursor-pointer"
           >
             <IconCirclePlus size={18} stroke={1.5} />
+            Añadir
           </button>
         </div>
       </div>
