@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Roboto } from "next/font/google";
 import "./globals.css";
+import ThemeInitializer from "@/components/ThemeInitializer";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -26,8 +27,36 @@ export default function RootLayout({
 }: Readonly<{
 	children: React.ReactNode;
 }>) {
+
+const blockingCode = `
+    (function() {
+      try {
+        const saved = localStorage.getItem('ayu-accent');
+        if (saved) {
+          document.documentElement.style.setProperty('--accent', saved);
+          
+          // Cálculo rápido de contraste para evitar importar funciones
+          const hex = saved.replace('#', '');
+          const r = parseInt(hex.substring(0, 2), 16) / 255;
+          const g = parseInt(hex.substring(2, 4), 16) / 255;
+          const b = parseInt(hex.substring(4, 6), 16) / 255;
+          const toLinear = (c) => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+          const lum = 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b);
+          
+          const contrastDark = (lum + 0.05) / (0.012 + 0.05); // Aproximado para #0d1017
+          const contrastLight = (1.0 + 0.05) / (lum + 0.05);
+          const text = contrastLight >= contrastDark ? '#fafafa' : '#0d1017';
+          
+          document.documentElement.style.setProperty('--accent-text', text);
+        }
+      } catch (e) {}
+    })();
+  `;
 	return (
-		<html lang="en" data-theme="dark">
+		<html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: blockingCode }} />
+      </head>
 			<body
 				className={`${Rob.className} antialiased`}
 			>

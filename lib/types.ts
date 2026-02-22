@@ -2,7 +2,6 @@ export interface Bookmark {
   id: number;
   title: string;
   site: string;
-  favicon: string;
   ogImage: string
 }
 

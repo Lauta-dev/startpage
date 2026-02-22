@@ -448,7 +448,3 @@ dialog::backdrop {
 .l {
   background-color: var(--bg-elevated);
 }
-
-:is(.list > :not(:last-child).list-row, .list > :not(:last-child) .list-row)::after {
-  border: none !important;
-}

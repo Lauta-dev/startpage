@@ -1,0 +1,550 @@
+/* ═══════════════════════════════════════════════════════════
+   bookmarks.css
+   Styles for /bookmarks — card grid + compact list views.
+   Uses Nord CSS variables from globals.css.
+   Accent color driven by AccentPicker → --accent / --accent-text
+═══════════════════════════════════════════════════════════ */
+
+/* ── Page shell ── */
+.bm-page {
+  min-height: 100vh;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  padding: 32px 24px 64px;
+}
+
+/* ── Toolbar ── */
+.bm-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.bm-toolbar__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.bm-toolbar__count {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-right: auto;
+}
+
+/* Search */
+.bm-search-wrap {
+  position: relative;
+}
+
+.bm-search-icon {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  color: var(--text-secondary);
+  pointer-events: none;
+}
+
+.bm-search-input {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.82rem;
+  padding: 7px 10px 7px 28px;
+  outline: none;
+  width: 200px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.bm-search-input::placeholder {
+  color: var(--text-secondary);
+}
+
+.bm-search-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+/* View toggle */
+.bm-view-toggle {
+  display: flex;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.bm-view-btn {
+  background: none;
+  border: none;
+  padding: 7px 11px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: color 0.15s, background 0.15s;
+  display: flex;
+  align-items: center;
+}
+
+.bm-view-btn:hover {
+  color: var(--text-primary);
+}
+
+.bm-view-btn--active {
+  background: color-mix(in srgb, var(--accent) 15%, transparent);
+  color: var(--accent);
+}
+
+/* ── Category chips ── */
+.bm-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.bm-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.73rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.bm-chip:hover {
+  border-color: var(--accent);
+  color: var(--text-secondary);
+}
+
+.bm-chip--active {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.bm-chip__count {
+  opacity: 0.5;
+  font-size: 0.65rem;
+}
+
+/* ── Section label (shared card + list) ── */
+.bm-section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  padding: 14px 10px 5px;
+}
+
+.bm-section-label:first-child {
+  padding-top: 4px;
+}
+
+/* Grid labels need to span all columns */
+.bm-section-label--grid {
+  grid-column: 1 / -1;
+  padding: 8px 2px 2px;
+}
+
+.bm-section-label__badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  padding: 2px 7px;
+  border-radius: 99px;
+}
+
+/* ── Empty state ── */
+.bm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 64px 0;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.bm-empty__icon {
+  font-size: 2rem;
+  opacity: 0.2;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   CARD VIEW
+═══════════════════════════════════════════════════════════ */
+.bm-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.bm-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0;
+  animation: bm-fade-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.2s;
+}
+
+.bm-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.22), 0 0 0 1px var(--accent);
+}
+
+/* OG image */
+.bm-card__img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-surface);
+  flex-shrink: 0;
+}
+
+.bm-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bm-card:hover .bm-card__img {
+  transform: scale(1.04);
+}
+
+.bm-card__img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 45%, rgba(46, 52, 64, 0.55) 100%);
+  pointer-events: none;
+}
+
+.bm-card__img-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bm-card__img-fallback img {
+  width: 30px;
+  height: 30px;
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+/* Card body */
+.bm-card__body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.bm-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bm-card__favicon {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.bm-card__domain {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bm-card__title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bm-card__desc {
+  font-size: 0.73rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  opacity: 0.8;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LIST VIEW
+═══════════════════════════════════════════════════════════ */
+.bm-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bm-list-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0;
+  animation: bm-fade-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.bm-list-row:hover {
+  background: var(--bg-elevated);
+  border-color: var(--border);
+}
+
+.bm-list-row__favicon {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+/* OG thumbnail */
+.bm-list-row__thumb {
+  width: 48px;
+  height: 32px;
+  border-radius: 5px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--bg-surface);
+}
+
+.bm-list-row__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.bm-list-row__thumb-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bm-list-row__thumb-fallback img {
+  width: 14px;
+  height: 14px;
+  opacity: 0.25;
+  filter: grayscale(1);
+}
+
+/* Main text */
+.bm-list-row__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.bm-list-row__title {
+  font-size: 0.83rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.bm-list-row__desc {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
+}
+
+/* Right side */
+.bm-list-row__right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.bm-list-row__domain {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+/* ── Animation ── */
+@keyframes bm-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE (≤ 600px)
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .bm-page {
+    padding: 16px 12px 48px;
+  }
+
+  .bm-toolbar {
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .bm-toolbar__title {
+    font-size: 1rem;
+  }
+
+  .bm-toolbar__count {
+    font-size: 0.7rem;
+  }
+
+  /* Search goes full width on its own row */
+  .bm-search-wrap {
+    order: 10;
+    width: 100%;
+  }
+
+  .bm-search-input {
+    width: 100%;
+    font-size: 16px;
+    /* prevent iOS zoom */
+    padding: 8px 10px 8px 30px;
+  }
+
+  /* Chips — horizontal scroll */
+  .bm-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin-bottom: 14px;
+    padding-bottom: 2px;
+  }
+
+  .bm-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .bm-chip {
+    flex-shrink: 0;
+  }
+
+  /* Card: single column, no image */
+  .bm-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .bm-card__img-wrap {
+    display: none;
+  }
+
+  .bm-card__body {
+    padding: 10px 12px 12px;
+    gap: 4px;
+  }
+
+  .bm-card__title {
+    -webkit-line-clamp: 1;
+  }
+
+  .bm-card__desc {
+    -webkit-line-clamp: 1;
+  }
+
+  /* List: no thumbnail, no description, no domain */
+  .bm-list {
+    gap: 1px;
+  }
+
+  .bm-list-row {
+    padding: 7px 8px;
+    gap: 8px;
+  }
+
+  .bm-list-row__thumb {
+    display: none;
+  }
+
+  .bm-list-row__desc {
+    display: none;
+  }
+
+  .bm-list-row__domain {
+    display: none;
+  }
+
+  .bm-list-row__title {
+    font-size: 0.8rem;
+  }
+}
+
+.hostname {
+  color: var(--text-muted);
+}

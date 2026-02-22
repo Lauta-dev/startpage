@@ -4,7 +4,7 @@ import AccentPicker from '@/components/ui/AccentPicker';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import QuickLinks from '@/components/quick-links/QuickLinks';
 import BookmarkGrid from '@/components/bookmarks/BookmarkGrid';
-import { Bookmark } from '@/lib/types';
+import { Bookmark } from '@/types/bookmark';
 
 interface QuickLink {
   id: number;

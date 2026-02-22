@@ -1,8 +1,8 @@
 'use client';
 
-import { Bookmark } from '@/lib/types';
 import React, { useState, useEffect } from 'react';
 import { IconX, IconDeviceFloppy, IconPencil, IconWorldWww, IconTag } from '@tabler/icons-react';
+import { Bookmark } from '@/types/bookmark';
 
 interface BookmarkModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ const BookmarkModal: React.FC<BookmarkModalProps> = ({
   // Sync values cuando cambia el bookmark que se está editando o se abre el modal
   useEffect(() => {
     if (isOpen) {
-      setSiteValue(editingBookmark?.bookmark.site ?? '');
+      setSiteValue(editingBookmark?.bookmark.url ?? '');
       setNameValue(editingBookmark?.bookmark.title ?? '');
     }
   }, [isOpen, editingBookmark]);

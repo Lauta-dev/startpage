@@ -45,6 +45,7 @@ export const bangs: Record<string, Bangs> = {
   "!tailwind": { name: "Tailwind CSS", url: "https://tailwindcss.com/docs/[[user]]" },
   "!bs": { name: "Bootstrap", url: "https://getbootstrap.com/docs/5.3/search/?q=[[user]]" },
   "!node": { name: "Node.js API", url: "https://nodejs.org/api/all.html#[[user]]" },
+  "!dev": { name: "DEV", url: "https://dev.to/search?q=[[user]]" },
 
   // --- REPOS Y PAQUETES ---
   "!gh": { name: "GitHub", url: "https://github.com/search?q=[[user]]" },

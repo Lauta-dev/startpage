@@ -5,13 +5,12 @@ import client from "@/lib/db"
 import { getUrlMetadata } from "@/lib/getFavicon"
 
 export async function CreateBookmark(url: string) {
-  const sql = `INSERT INTO bookmarks (title, url, og_image, og_description) VALUES (?,?,?,?)`
-  const { title, url: site, ogImage } = await getUrlMetadata(url)
-
+  const sql = `INSERT INTO bookmarks (title, url, og_image, og_description, category) VALUES (?,?,?,?,?)`
+  const { title, url: site, ogImage, description } = await getUrlMetadata(url)
 
   try {
     const result = await client.execute({
-      sql, args: [title, site, ogImage, "abc"]
+      sql, args: [title, site, ogImage, description || "", "Programming"]
     })
 
     revalidatePath("/")

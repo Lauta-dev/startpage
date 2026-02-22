@@ -36,15 +36,21 @@ export async function getUrlMetadata(url: string) {
       $('link[rel="icon"]').attr('href') ||
       $('link[rel="shortcut icon"]').attr('href');
 
+    const description = $('meta[name="description"]').attr('content') || "";
+
     const favicon = iconHref 
       ? new URL(iconHref, targetUrl).href 
       : `${new URL(targetUrl).origin}/favicon.ico`;
+
+    const hostname = new URL(url).hostname.replace('www.', '')
 
     return {
       title: title.trim(),
       favicon,
       ogImage: ogImage ? new URL(ogImage, targetUrl).href : null,
-      url: targetUrl
+      url: targetUrl,
+      description,
+      hostname
     };
 
   } catch (error) {
