@@ -16,7 +16,13 @@ export async function getUrlMetadata(url: string) {
 
     const response = await fetch(targetUrl, { 
       signal: controller.signal,
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; GeminiBot/1.0)' } 
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache',
+  } 
     });
     
     clearTimeout(timeout);
@@ -46,6 +52,13 @@ export async function getUrlMetadata(url: string) {
 
     const hostname = new URL(targetUrl).hostname.replace('www.', '')
 
+    console.log({title: title.trim(),
+      favicon,
+      ogImage: ogImage ? new URL(ogImage, targetUrl).href : null,
+      url: targetUrl,
+      description,
+      hostname})
+
     return {
       title: title.trim(),
       favicon,
@@ -67,4 +80,4 @@ export async function getUrlMetadata(url: string) {
   }
 }
 
-getUrlMetadata("github.com")
+getUrlMetadata("https://reddit.com")
