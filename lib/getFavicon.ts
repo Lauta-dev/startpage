@@ -7,6 +7,8 @@ export async function getUrlMetadata(url: string) {
     targetUrl = `https://${targetUrl}`;
   }
 
+  console.log(targetUrl)
+
   try {
     // 2. Fetch con timeout para que no se cuelgue tu server
     const controller = new AbortController();
@@ -42,7 +44,7 @@ export async function getUrlMetadata(url: string) {
       ? new URL(iconHref, targetUrl).href 
       : `${new URL(targetUrl).origin}/favicon.ico`;
 
-    const hostname = new URL(url).hostname.replace('www.', '')
+    const hostname = new URL(targetUrl).hostname.replace('www.', '')
 
     return {
       title: title.trim(),
@@ -65,4 +67,4 @@ export async function getUrlMetadata(url: string) {
   }
 }
 
-getUrlMetadata("https://youtube.com")
+getUrlMetadata("github.com")
