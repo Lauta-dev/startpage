@@ -32,19 +32,25 @@ function getContrastText(hex: string): string {
 }
 
 const AccentPicker: React.FC = () => {
-  // 1. IMPORTANTE: No leas localStorage aquí, usa siempre el valor por defecto
   const [accent, setAccent] = useState(ACCENTS[0].value);
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false); // Para evitar mismatch
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
-    const saved = localStorage.getItem('ayu-accent');
-    if (saved) {
-      setAccent(saved);
-      // No llames a applyAccent aquí si ya tienes el script en el Head
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const initial = saved ?? ACCENTS[0].value;
+    setAccent(initial);
+    //applyAccent(initial);
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
     }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   function applyAccent(value: string) {
@@ -55,44 +61,73 @@ const AccentPicker: React.FC = () => {
   function handleSelect(value: string) {
     setAccent(value);
     applyAccent(value);
-    localStorage.setItem('ayu-accent', value);
+    localStorage.setItem(STORAGE_KEY, value);
     setOpen(false);
   }
 
-  // Si no ha montado, mostramos un placeholder o el default para evitar errores de SSR
   const current = ACCENTS.find(a => a.value === accent) ?? ACCENTS[0];
 
   return (
-    <div ref={ref} className="relative" suppressHydrationWarning>
+    <div ref={ref} className="relative">
+      {/* Trigger */}
       <button
         onClick={() => setOpen(o => !o)}
-        // 2. RECOMENDACIÓN: Usa clases de Tailwind en lugar de style inline si puedes
-        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 border"
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer"
         style={{
           background: 'var(--bg-surface)',
-          borderColor: 'var(--border)',
+          border: '1px solid var(--border)',
           color: 'var(--text-secondary)',
         }}
+        onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
+        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
       >
+        {/* Swatch */}
         <span
-          className="w-4 h-4 rounded-sm flex-shrink-0"
-          style={{ background: mounted ? accent : ACCENTS[0].value }}
+          className="w-4 h-4 rounded-sm shrink-0"
+          style={{ background: current.value }}
         />
-        <span className="hidden sm:inline">{mounted ? current.label : 'Cargando...'}</span>
-        <IconChevronDown size={14} className={open ? 'rotate-180' : ''} />
+        <span className="hidden sm:inline">{current.label}</span>
+        <IconChevronDown
+          size={14}
+          stroke={2}
+          className="transition-transform duration-200"
+          style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
+        />
       </button>
 
+      {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 mt-2 w-48 rounded-xl z-50 bg-bg-surface border border-border shadow-xl">
+        <div
+          className="absolute right-0 mt-2 w-48 rounded-xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+          style={{
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border)',
+          }}
+        >
           {ACCENTS.map(a => (
             <button
               key={a.value}
               onClick={() => handleSelect(a.value)}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-bg-overlay text-text-secondary hover:text-text-primary"
+              className="w-full flex items-center gap-3 px-3 py-2.5 text-sm transition-colors duration-150 cursor-pointer"
+              style={{ color: 'var(--text-secondary)' }}
+              onMouseEnter={e => {
+                (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
+                (e.currentTarget as HTMLElement).style.color = 'var(--text-primary)';
+              }}
+              onMouseLeave={e => {
+                (e.currentTarget as HTMLElement).style.background = 'transparent';
+                (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
+              }}
             >
-              <span className="w-5 h-5 rounded-sm" style={{ background: a.value }} />
+              {/* Swatch cuadrado */}
+              <span
+                className="w-5 h-5 rounded-sm flex-shrink-0"
+                style={{ background: a.value }}
+              />
               <span className="flex-1 text-left">{a.label}</span>
-              {a.value === accent && <IconCheck size={14} className="text-accent" />}
+              {a.value === accent && (
+                <IconCheck size={14} stroke={2.5} style={{ color: 'var(--accent)' }} />
+              )}
             </button>
           ))}
         </div>
@@ -101,4 +136,4 @@ const AccentPicker: React.FC = () => {
   );
 };
 
-export default AccentPicker
+export default AccentPicker;

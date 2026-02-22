@@ -9,7 +9,7 @@ export async function CreateBookmark(url: string) {
   const { title, url: site, ogImage, description } = await getUrlMetadata(url)
 
   try {
-    const result = await client.execute({
+    await client.execute({
       sql, args: [title, site, ogImage, description || "", "Programming"]
     })
 
