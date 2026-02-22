@@ -26,6 +26,14 @@ const BigList: React.FC<{ bookmarks: Bookmark[] }> = ({ bookmarks }) => {
           rel="noopener noreferrer"
           className="bm-card"
           style={{ animationDelay: `${Math.min(i * 35, 350)}ms` }}
+          onMouseEnter={e => {
+  (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--accent) 10%, var(--bg-surface))';
+  (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
+}}
+onMouseLeave={e => {
+  (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
+  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+}}
         >
           {/* Image */}
           <div className="bm-card__img-wrap">

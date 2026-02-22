@@ -23,6 +23,17 @@
      warning  #ffb454
      info     #73b8ff
 ══════════════════════════════════════════════════════════ */
+/*
+*onMouseEnter={e => {
+              (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
+            }}
+            onMouseLeave={e => {
+              (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
+              (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+            }}
+*
+* **/
 
 :root {
   /* ── Ayu raw color scale (dark) ── */

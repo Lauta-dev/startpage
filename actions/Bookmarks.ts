@@ -5,9 +5,11 @@ import client from "@/lib/db"
 import { getUrlMetadata } from "@/lib/getFavicon"
 
 export async function CreateBookmark(url: string) {
+  let targetUrl = url.startsWith("https://") ? url : `https://${url}`
   const sql = `INSERT INTO bookmarks (title, url, og_image, og_description, category) VALUES (?,?,?,?,?)`
-  const { title, url: site, ogImage, description } = await getUrlMetadata(url)
+  const { title, url: site, ogImage, description } = await getUrlMetadata(targetUrl)
 
+  console.log({title, url: site, ogImage, description})
   try {
     await client.execute({
       sql, args: [title, site, ogImage, description || "", "Programming"]

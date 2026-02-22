@@ -1,13 +1,17 @@
 import * as cheerio from 'cheerio';
 
-export async function getUrlMetadata(url: string) {
+function firstLatter(url:string) {
+    const hn = new URL(url).hostname.replace("www.", '').split(".")[0]
+    return hn[0].toUpperCase() + hn.slice(1)
+}
+
+export async function getUrlMetadataOriginal(url: string) {
   // 1. Limpieza básica de la URL
   let targetUrl = url.trim();
   if (!targetUrl.startsWith("https")) {
     targetUrl = `https://${targetUrl}`;
   }
 
-  console.log(targetUrl)
 
   try {
     // 2. Fetch con timeout para que no se cuelgue tu server
@@ -17,11 +21,7 @@ export async function getUrlMetadata(url: string) {
     const response = await fetch(targetUrl, { 
       signal: controller.signal,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   } 
     });
     
@@ -30,7 +30,7 @@ export async function getUrlMetadata(url: string) {
     const $ = cheerio.load(html);
 
     // 3. Extraer Título (Prioridad: OG -> Title tag)
-    const title = 
+    let title = 
       $('meta[property="og:title"]').attr('content') || 
       $('title').text() || 
       new URL(targetUrl).hostname;
@@ -52,15 +52,8 @@ export async function getUrlMetadata(url: string) {
 
     const hostname = new URL(targetUrl).hostname.replace('www.', '')
 
-    console.log({title: title.trim(),
-      favicon,
-      ogImage: ogImage ? new URL(ogImage, targetUrl).href : null,
-      url: targetUrl,
-      description,
-      hostname})
-
     return {
-      title: title.trim(),
+      title: title.trim().startsWith("https://") ? firstLatter(url) : title.trim(),
       favicon,
       ogImage: ogImage ? new URL(ogImage, targetUrl).href : null,
       url: targetUrl,
@@ -77,6 +70,38 @@ export async function getUrlMetadata(url: string) {
       ogImage: null,
       url: targetUrl
     };
+  }
+}
+
+export async function getUrlMetadata(url: string) {
+  try {
+    const res = await fetch(`https://api.urlmeta.org/meta?url=${encodeURIComponent(url)}`, {
+      headers: {
+        Authorization: `Basic ${process.env.URL_META_API}`
+      },
+    });
+    const data = await res.json();
+
+    console.log({data})
+
+    // { data: { result: { status: 'OK' }, meta: { site: {}, title: '' } } }
+
+    if (data.result?.status === 'OK') {
+      return {
+        title: data.meta?.title || firstLatter(url),
+        favicon: `${new URL(url).origin}/favicon.ico`,
+        ogImage: data.meta?.image || null,
+        url,
+        description: data.meta?.description || '',
+        hostname: new URL(url).hostname.replace('www.', '')
+      }
+    }
+    // si el status no es OK, cae al fallback
+    return getUrlMetadataOriginal(url)
+    
+  } catch (error) {
+    // si falla el fetch a urlmeta, cae al fallback
+    return getUrlMetadataOriginal(url)
   }
 }
 

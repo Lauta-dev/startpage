@@ -31,13 +31,13 @@ const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => {
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group"
+            className="flex items-center gap-3 p-3 rounded-xl transition-all duration-75"
             style={{
               background: 'var(--bg-surface)',
               border: '1px solid var(--border)',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
+              (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--accent) 10%, var(--bg-surface))';
               (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
             }}
             onMouseLeave={e => {

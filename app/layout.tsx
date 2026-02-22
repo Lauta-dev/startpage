@@ -60,6 +60,7 @@ const blockingCode = `
 			<body
 				className={`${Rob.className} antialiased`}
 			>
+				<ThemeInitializer />
 				{children}
 			</body>
 		</html>

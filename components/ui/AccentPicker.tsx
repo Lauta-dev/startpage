@@ -15,6 +15,7 @@ const ACCENTS = [
 ];
 
 const STORAGE_KEY = 'ayu-accent';
+const DEFAULT = ACCENTS[0].value;
 
 function getLuminance(hex: string): number {
   const r = parseInt(hex.slice(1, 3), 16) / 255;
@@ -32,15 +33,18 @@ function getContrastText(hex: string): string {
 }
 
 const AccentPicker: React.FC = () => {
-  const [accent, setAccent] = useState(ACCENTS[0].value);
+  // Siempre inicia con el default en SSR y cliente por igual → sin hydration mismatch.
+  // El useEffect sincroniza el valor real desde localStorage inmediatamente al montar.
+  const [accent, setAccent] = useState<string>(DEFAULT);
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    const initial = saved ?? ACCENTS[0].value;
-    setAccent(initial);
-    //applyAccent(initial);
+    // Corre solo en cliente, después de hidratación → seguro
+    const saved = localStorage.getItem(STORAGE_KEY) ?? DEFAULT;
+    setAccent(saved);
+    // No necesitamos llamar applyAccent aquí porque el blocking script
+    // en <head> ya seteó --accent antes del primer paint
   }, []);
 
   useEffect(() => {
@@ -69,7 +73,6 @@ const AccentPicker: React.FC = () => {
 
   return (
     <div ref={ref} className="relative">
-      {/* Trigger */}
       <button
         onClick={() => setOpen(o => !o)}
         className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer"
@@ -81,12 +84,21 @@ const AccentPicker: React.FC = () => {
         onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
         onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
       >
-        {/* Swatch */}
+        {/*
+          El swatch usa var(--accent) directamente desde CSS.
+          El blocking script en <head> ya seteó --accent antes del primer paint,
+          así que este span siempre muestra el color correcto sin esperar React.
+          suppressHydrationWarning porque el style inline puede diferir entre
+          SSR (--accent default) y cliente (--accent del blocking script).
+        */}
         <span
           className="w-4 h-4 rounded-sm shrink-0"
-          style={{ background: current.value }}
+          style={{ background: 'var(--accent)' }}
+          suppressHydrationWarning
         />
-        <span className="hidden sm:inline">{current.label}</span>
+        <span className="hidden sm:inline" suppressHydrationWarning>
+          {current.label}
+        </span>
         <IconChevronDown
           size={14}
           stroke={2}
@@ -95,7 +107,6 @@ const AccentPicker: React.FC = () => {
         />
       </button>
 
-      {/* Dropdown */}
       {open && (
         <div
           className="absolute right-0 mt-2 w-48 rounded-xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
@@ -119,11 +130,7 @@ const AccentPicker: React.FC = () => {
                 (e.currentTarget as HTMLElement).style.color = 'var(--text-secondary)';
               }}
             >
-              {/* Swatch cuadrado */}
-              <span
-                className="w-5 h-5 rounded-sm flex-shrink-0"
-                style={{ background: a.value }}
-              />
+              <span className="w-5 h-5 rounded-sm flex-shrink-0" style={{ background: a.value }} />
               <span className="flex-1 text-left">{a.label}</span>
               {a.value === accent && (
                 <IconCheck size={14} stroke={2.5} style={{ color: 'var(--accent)' }} />

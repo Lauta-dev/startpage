@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import { IconClock } from '@tabler/icons-react';
 
 const Clock: React.FC = () => {
-  const [dateTime, setDateTime] = useState(new Date());
+  const [dateTime, setDateTime] = useState<Date | null>(null);
 
   useEffect(() => {
+    setDateTime(new Date());
     const timer = setInterval(() => setDateTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -23,14 +24,20 @@ const Clock: React.FC = () => {
 
   return (
     <div>
-      <div className="text-5xl sm:text-6xl font-bold tracking-tight mb-1 flex items-center gap-3"
-           style={{ color: 'var(--text-primary)' }}>
+      <div
+        className="text-5xl sm:text-6xl font-bold tracking-tight mb-1 flex items-center gap-3"
+        style={{ color: 'var(--text-primary)' }}
+      >
         <IconClock size={44} stroke={1.25} className="hidden sm:block" style={{ color: 'var(--text-muted)' }} />
-        {formatTime(dateTime)}
+        {/* Placeholder invisible que reserva el mismo espacio que "00:00" */}
+        {dateTime ? formatTime(dateTime) : <span className="invisible">00:00</span>}
       </div>
-      <div className="text-base sm:text-lg font-light tracking-wide sm:pl-[56px]"
-           style={{ color: 'var(--text-secondary)' }}>
-        {formatDate(dateTime)}
+      <div
+        className="text-base sm:text-lg font-light tracking-wide sm:pl-[56px]"
+        style={{ color: 'var(--text-secondary)' }}
+      >
+        {/* Mismo truco: reserva espacio con texto invisible */}
+        {dateTime ? formatDate(dateTime) : <span className="invisible">Lunes 00 de Enero</span>}
       </div>
     </div>
   );
