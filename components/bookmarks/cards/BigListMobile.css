@@ -102,6 +102,9 @@
   overflow: hidden;
   margin: 0;
   transition: color 0.12s;
+}
+
+.feed-row:hover .feed-row__title {
   color: var(--accent);
 }
 
@@ -165,5 +168,11 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .feed-row__title {
+    color: var(--accent);
   }
 }
