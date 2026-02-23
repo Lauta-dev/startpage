@@ -1,46 +1,47 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+
 /* ══════════════════════════════════════════════════════════
    Terminal Dark — variables idénticas al HTML de referencia
 ══════════════════════════════════════════════════════════ */
 :root {
-  --accent:      #ffb454;
+  --accent: #ffb454;
   --accent-text: #0a0c0f;
 
   /* Backgrounds */
-  --bg:          #0a0c0f;
-  --bg-raised:   #0e1116;
-  --bg-surface:  #131920;
-  --bg-hover:    #161d26;
+  --bg: #0a0c0f;
+  --bg-raised: #0e1116;
+  --bg-surface: #131920;
+  --bg-hover: #161d26;
 
   /* Borders */
-  --border:      #1c2530;
-  --border-dim:  #141c24;
+  --border: #1c2530;
+  --border-dim: #141c24;
 
   /* Text */
-  --text-hi:     #e8ecf2;
-  --text-mid:    #8fa3b8;
-  --text-lo:     #4e6278;
+  --text-hi: #f2f5fa;
+  --text-mid: #b0c4d8;
+  --text-lo: #6b84a0;
 
   /* Aliases para compatibilidad con componentes existentes */
-  --bg-base:        var(--bg);
-  --bg-elevated:    var(--bg-raised);
-  --bg-overlay:     var(--bg-hover);
-  --bg-base:        var(--bg);
-  --text-primary:   var(--text-hi);
+  --bg-base: var(--bg);
+  --bg-elevated: var(--bg-raised);
+  --bg-overlay: var(--bg-hover);
+  --bg-base: var(--bg);
+  --text-primary: var(--text-hi);
   --text-secondary: var(--text-mid);
-  --text-muted:     var(--text-lo);
-  --border-subtle:  var(--border-dim);
+  --text-muted: var(--text-lo);
+  --border-subtle: var(--border-dim);
 
   --modal-backdrop: rgba(5, 8, 12, 0.92);
 
-  --color-success:        #aad94c;
-  --color-success-bg:     color-mix(in srgb, #aad94c 10%, transparent);
+  --color-success: #aad94c;
+  --color-success-bg: color-mix(in srgb, #aad94c 10%, transparent);
   --color-success-border: color-mix(in srgb, #aad94c 25%, transparent);
-  --color-danger:         #f07178;
-  --color-danger-bg:      color-mix(in srgb, #f07178 10%, transparent);
-  --color-danger-border:  color-mix(in srgb, #f07178 25%, transparent);
+  --color-danger: #f07178;
+  --color-danger-bg: color-mix(in srgb, #f07178 10%, transparent);
+  --color-danger-border: color-mix(in srgb, #f07178 25%, transparent);
 }
 
 /* ── Base ── */
@@ -64,13 +65,11 @@ body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255,255,255,0.013) 2px,
-    rgba(255,255,255,0.013) 4px
-  );
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.013) 2px,
+      rgba(255, 255, 255, 0.013) 4px);
   pointer-events: none;
   z-index: 9999;
 }
@@ -85,17 +84,36 @@ body::before {
 }
 
 /* ── dim-btn ── */
-.dim-btn { color: var(--accent); }
+.dim-btn {
+  color: var(--accent);
+}
+
 @media (min-width: 640px) {
-  .dim-btn { color: var(--text-lo); }
-  .dim-btn:hover { color: var(--accent); }
+  .dim-btn {
+    color: var(--text-lo);
+  }
+
+  .dim-btn:hover {
+    color: var(--accent);
+  }
 }
 
 /* ── Modal ── */
-.modal { background: transparent; }
-.modal.modal-open { background: transparent; }
-dialog::backdrop { background: var(--modal-backdrop); }
-.modal-backdrop { background: var(--modal-backdrop); }
+.modal {
+  background: transparent;
+}
+
+.modal.modal-open {
+  background: transparent;
+}
+
+dialog::backdrop {
+  background: var(--modal-backdrop);
+}
+
+.modal-backdrop {
+  background: var(--modal-backdrop);
+}
 
 /* ── Bang pill ── */
 .bang-pill {
@@ -111,46 +129,141 @@ dialog::backdrop { background: var(--modal-backdrop); }
   opacity: 0;
   animation: bang-pill-reveal 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
 @keyframes bang-pill-reveal {
-  0%   { max-width: 0; opacity: 0; padding-left: 0; gap: 0; }
-  25%  { opacity: 1; }
-  100% { max-width: 220px; opacity: 1; padding-left: 6px; gap: 6px; }
+  0% {
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    gap: 0;
+  }
+
+  25% {
+    opacity: 1;
+  }
+
+  100% {
+    max-width: 220px;
+    opacity: 1;
+    padding-left: 6px;
+    gap: 6px;
+  }
 }
+
 .bang-pill--closing {
   animation: bang-pill-collapse 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
+
 @keyframes bang-pill-collapse {
-  0%   { max-width: 220px; opacity: 1; padding-left: 6px; gap: 6px; }
-  45%  { opacity: 0; }
-  100% { max-width: 0; opacity: 0; padding-left: 0; gap: 0; }
+  0% {
+    max-width: 220px;
+    opacity: 1;
+    padding-left: 6px;
+    gap: 6px;
+  }
+
+  45% {
+    opacity: 0;
+  }
+
+  100% {
+    max-width: 0;
+    opacity: 0;
+    padding-left: 0;
+    gap: 0;
+  }
 }
+
 .bang-pill__icon {
-  width: 15px; height: 15px; border-radius: 2px;
-  object-fit: contain; flex-shrink: 0; opacity: 0;
+  width: 15px;
+  height: 15px;
+  border-radius: 2px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0;
   animation: bang-fade-in 0.15s ease 0.18s forwards;
 }
+
 .bang-pill__name {
-  font-size: 0.8rem; font-weight: 600; color: var(--accent);
-  opacity: 0; animation: bang-fade-in 0.15s ease 0.22s forwards;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  opacity: 0;
+  animation: bang-fade-in 0.15s ease 0.22s forwards;
 }
+
 .bang-pill__divider {
-  width: 1px; height: 18px; background: var(--border);
-  flex-shrink: 0; margin-left: 2px; opacity: 0;
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin-left: 2px;
+  opacity: 0;
   animation: bang-fade-in 0.15s ease 0.26s forwards;
 }
-@keyframes bang-fade-in { to { opacity: 1; } }
+
+@keyframes bang-fade-in {
+  to {
+    opacity: 1;
+  }
+}
+
 .bang-pill--closing .bang-pill__icon,
 .bang-pill--closing .bang-pill__name,
 .bang-pill--closing .bang-pill__divider {
   animation: bang-fade-out 0.1s ease forwards;
 }
-@keyframes bang-fade-out { to { opacity: 0; } }
+
+@keyframes bang-fade-out {
+  to {
+    opacity: 0;
+  }
+}
 
 /* ── Animations ── */
-@keyframes slideUp   { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
-@keyframes slideDown { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(14px); } }
-@keyframes fadeIn    { from { opacity:0; } to { opacity:1; } }
-@keyframes fadeOut   { from { opacity:1; } to { opacity:0; } }
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
 
 /* ── Section — estructura exacta del HTML de referencia ── */
 .section {
@@ -185,4 +298,9 @@ dialog::backdrop { background: var(--modal-backdrop); }
   align-items: center;
   gap: 6px;
 }
-.section-label::before { content: '//'; color: var(--text-lo); opacity: 0.5; }
+
+.section-label::before {
+  content: '//';
+  color: var(--text-lo);
+  opacity: 0.5;
+}
