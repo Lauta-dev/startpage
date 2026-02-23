@@ -28,7 +28,6 @@ const StartPage: React.FC<Props> = ({ bookmarks, quickLinks }) => (
       <SearchBar />
     </div>
 
-    <QuickLinks quickLinks={quickLinks} />
     <BookmarkGrid bookmarks={bookmarks} />
   </div>
 );

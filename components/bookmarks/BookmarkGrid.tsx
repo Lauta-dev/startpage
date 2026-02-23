@@ -16,6 +16,7 @@ interface Props {
 }
 
 const BookmarkGrid: React.FC<Props> = ({ bookmarks }) => {
+  console.log({bookmarks})
   const [showModal, setShowModal]     = useState(false);
   const [isClosing, setIsClosing]     = useState(false);
   const [editingBookmark, setEditingBookmark] = useState<{ id: number; bookmark: Bookmark } | null>(null);
