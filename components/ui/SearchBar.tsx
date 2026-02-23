@@ -28,7 +28,6 @@ const SearchBar: React.FC = () => {
   const [focusedIndex, setFocusedIndex]       = useState(0);
   const inputRef     = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
   // Build dropdown suggestions
   useEffect(() => {
@@ -55,13 +54,6 @@ const SearchBar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px)');
-    setIsMobile(mq.matches);
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mq.addEventListener('change', handler);
-    return () => mq.removeEventListener('change', handler);
-  }, []);
 
   const applyBang = (code: string, entry: BangEntry) => {
     setActiveBang({ code, entry });
@@ -183,20 +175,20 @@ const SearchBar: React.FC = () => {
           </div>
         ) : (
           /* .search-prompt — hidden on mobile */
-          !isMobile && (
-            <span style={{
-              padding: '0 12px',
-              color: 'var(--accent)',
-              fontSize: '1rem',
-              fontWeight: 700,
-              flexShrink: 0,
-              userSelect: 'none',
-              borderRight: '1px solid var(--border-dim)',
-              display: 'flex',
-              alignItems: 'center',
-              height: '100%',
-            }}>›</span>
-          )
+          <span
+              className="search-prompt"
+              style={{
+                padding: '0 12px',
+                color: 'var(--accent)',
+                fontSize: '1rem',
+                fontWeight: 700,
+                flexShrink: 0,
+                userSelect: 'none',
+                borderRight: '1px solid var(--border-dim)',
+                display: 'flex',
+                alignItems: 'center',
+                height: '100%',
+              }}>›</span>
         )}
 
         {/* input area */}
@@ -244,15 +236,18 @@ const SearchBar: React.FC = () => {
         </div>
 
         {/* .search-hint — hidden on mobile */}
-        {!activeBang && !isMobile && (
-          <span style={{
-            padding: '0 14px',
-            fontSize: '0.58rem',
-            color: 'var(--text-lo)',
-            flexShrink: 0,
-            letterSpacing: '0.06em',
-            whiteSpace: 'nowrap',
-          }}>
+        {!activeBang && (
+          <span
+            className="search-hint"
+            style={{
+              padding: '0 14px',
+              fontSize: '0.58rem',
+              color: 'var(--text-lo)',
+              flexShrink: 0,
+              letterSpacing: '0.06em',
+              whiteSpace: 'nowrap',
+            }}
+          >
             ctrl+space
           </span>
         )}

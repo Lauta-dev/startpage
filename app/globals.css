@@ -304,3 +304,20 @@ dialog::backdrop {
   color: var(--text-lo);
   opacity: 0.5;
 }
+
+/* ── BookmarkGrid responsive — sin JS, sin flash ── */
+.bm-view-toggle  { display: flex; overflow: hidden; }
+.bm-card-view    { display: block; }
+.bm-feed-view    { display: none; }
+
+@media (max-width: 640px) {
+  .bm-view-toggle { display: none; }   /* hide grid/list toggle on mobile */
+  .bm-card-view   { display: none; }   /* hide card grid on mobile */
+  .bm-feed-view   { display: block; }  /* show feed list on mobile */
+}
+
+/* ── SearchBar responsive ── */
+@media (max-width: 640px) {
+  .search-prompt { display: none; }
+  .search-hint   { display: none; }
+}
