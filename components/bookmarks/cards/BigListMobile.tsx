@@ -31,7 +31,11 @@ const BigListMobile: React.FC<Props> = ({ bookmarks, onEdit, onDelete }) => (
               <img src={getFavicon(bookmark.url)} alt="" className="feed-row__favicon" />
               {getDomain(bookmark.url)}
             </span>
-            <h3 className="feed-row__title">{getTitle(bookmark)}</h3>
+            <h3
+              className="feed-row__title"
+            >
+              {getTitle(bookmark)}
+            </h3>
             {bookmark.desc && <p className="feed-row__desc">{bookmark.desc}</p>}
           </div>
         </a>
