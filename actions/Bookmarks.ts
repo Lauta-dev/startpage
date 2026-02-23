@@ -1,69 +1,67 @@
 'use server';
-import { revalidatePath } from "next/cache";
+import { revalidatePath } from 'next/cache';
+import client from '@/lib/db';
+import { getUrlMetadata } from '@/lib/getFavicon';
 
-import client from "@/lib/db"
-import { getUrlMetadata } from "@/lib/getFavicon"
+export async function CreateBookmark(url: string, categoryId: number, categoryName: string) {
+  let targetUrl = url.startsWith('https://') ? url : `https://${url}`;
+  const { title, url: site, ogImage, description } = await getUrlMetadata(targetUrl);
 
-export async function CreateBookmark(url: string) {
-  let targetUrl = url.startsWith("https://") ? url : `https://${url}`
-  const sql = `INSERT INTO bookmarks (title, url, og_image, og_description, category) VALUES (?,?,?,?,?)`
-  const { title, url: site, ogImage, description } = await getUrlMetadata(targetUrl)
-
-  console.log({title, url: site, ogImage, description})
   try {
     await client.execute({
-      sql, args: [title, site, ogImage, description || "", "Programming"]
-    })
-
-    revalidatePath("/")
-
+      sql: `INSERT INTO bookmarks (title, url, og_image, og_description, category, category_id)
+            VALUES (?, ?, ?, ?, ?, ?)`,
+      args: [title, site, ogImage, description || '', categoryName, categoryId],
+    });
+    revalidatePath('/');
   } catch (error) {
-    console.log("-----ERROR AL INSERTAR -----------------------------")
-    console.error(error)
-    console.log("-----------------------------------")
+    console.error('ERROR AL INSERTAR', error);
   }
 }
 
 export async function DeleteBookmark(id: number) {
-  const sql = "DELETE FROM bookmarks WHERE id = ?"
-  
   try {
-    await client.execute({
-      sql, args: [id]
-    })
-
-    revalidatePath("/")
-    return { success: true }
+    await client.execute({ sql: 'DELETE FROM bookmarks WHERE id = ?', args: [id] });
+    revalidatePath('/');
+    return { success: true };
   } catch (error) {
-    console.log("-----ERROR AL ELIMINAR -----------------------------")
-    console.error(error)
-    console.log("-----------------------------------")
-    
-    return { success: false }
+    console.error('ERROR AL ELIMINAR', error);
+    return { success: false };
   }
 }
 
-export async function EditBookark({ customTitle, newUrl, id }: { customTitle: string, newUrl: string, id: number }) {
-  const sql = `UPDATE bookmarks SET title = ?, url = ?, og_image = ? WHERE id = ?`
-
+export async function EditBookark({
+  customTitle,
+  newUrl,
+  id,
+  categoryId,
+  categoryName,
+}: {
+  customTitle: string;
+  newUrl: string;
+  id: number;
+  categoryId?: number;
+  categoryName?: string;
+}) {
   try {
-    const newMeta = await getUrlMetadata(newUrl.trim())
-    
-    await client.execute({
-      sql,
-      args: [customTitle ?? newMeta.title, newMeta.url, newMeta.ogImage, id]
-    })
+    const newMeta = await getUrlMetadata(newUrl.trim());
 
-    console.log("EN EL SERVIDOR__________")
+    if (categoryId !== undefined && categoryName !== undefined) {
+      await client.execute({
+        sql: `UPDATE bookmarks SET title = ?, url = ?, og_image = ?, category = ?, category_id = ? WHERE id = ?`,
+        args: [customTitle ?? newMeta.title, newMeta.url, newMeta.ogImage, categoryName, categoryId, id],
+      });
+    } else {
+      await client.execute({
+        sql: `UPDATE bookmarks SET title = ?, url = ?, og_image = ? WHERE id = ?`,
+        args: [customTitle ?? newMeta.title, newMeta.url, newMeta.ogImage, id],
+      });
+    }
 
-    revalidatePath("/")
-    return { success: true }
+    revalidatePath('/');
+    return { success: true };
   } catch (error) {
-    console.log("-----ERROR AL EDITAR -----------------------------")
-    console.error(error)
-    console.log("-----------------------------------")
-    
-    return { success: false }
+    console.error('ERROR AL EDITAR', error);
+    return { success: false };
   }
-
 }

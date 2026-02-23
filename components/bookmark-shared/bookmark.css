@@ -198,13 +198,14 @@
 ═══════════════════════════════════════════════════════════ */
 .bm-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .bm-card {
   display: flex;
   flex-direction: column;
-  background: var(--bg-elevated);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-dim);
   overflow: hidden;
   text-decoration: none;
   color: inherit;
@@ -218,6 +219,7 @@
 
 .bm-card:hover {
   transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--border-dim));
 }
 
 /* OG image */
@@ -321,6 +323,58 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ── Card action buttons (edit / delete) ── */
+.bm-card__actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 2;
+}
+
+.bm-card:hover .bm-card__actions {
+  opacity: 1;
+}
+
+.bm-card__action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: var(--bg-raised);
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  transition: color 0.12s, border-color 0.12s, background 0.12s;
+}
+
+.bm-card__action-btn--edit {
+  color: var(--text-lo);
+}
+.bm-card__action-btn--edit:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-raised));
+}
+
+.bm-card__action-btn--delete {
+  color: var(--text-lo);
+  background: var(--bg-raised);
+}
+.bm-card__action-btn--delete:hover {
+  color: var(--color-danger);
+  border-color: var(--color-danger-border);
+  background: var(--color-danger-bg);
+}
+.bm-card__action-btn--delete:not(:hover) {
+  background: var(--bg-raised);
 }
 
 /* ═══════════════════════════════════════════════════════════

@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { IconCirclePlus, IconLayoutGrid, IconLayoutList } from '@tabler/icons-react';
 import BookmarkModal from './bookmarkModal';
-import { CreateBookmark, EditBookark } from '@/actions/Bookmarks';
+import { CreateBookmark, EditBookark, DeleteBookmark } from '@/actions/Bookmarks';
+import { getCategories, createCategory, Category } from '@/actions/getCategories';
 import CompactList from '@/components/bookmark-shared/CompactList';
 import { Bookmark } from '@/types/bookmark';
 import BigList from '@/components/bookmark-shared/BigList';
@@ -11,11 +12,12 @@ import BigList from '@/components/bookmark-shared/BigList';
 const MOBILE = 640;
 
 const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
-  const [showModal, setShowModal]       = useState(false);
-  const [isClosing, setIsClosing]       = useState(false);
-  const [editingBm, setEditingBm]       = useState<{ id: number; bookmark: Bookmark } | null>(null);
-  const [isListView, setIsListView]     = useState(false);
-  const [isMobile, setIsMobile]         = useState(false);
+  const [showModal, setShowModal]   = useState(false);
+  const [isClosing, setIsClosing]   = useState(false);
+  const [editingBm, setEditingBm]   = useState<{ id: number; bookmark: Bookmark } | null>(null);
+  const [isListView, setIsListView] = useState(false);
+  const [isMobile, setIsMobile]     = useState(false);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     const mq = window.matchMedia(`(max-width: ${MOBILE}px)`);
@@ -25,18 +27,51 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
     return () => mq.removeEventListener('change', h);
   }, []);
 
+  // Cargar categorías al montar
+  useEffect(() => {
+    getCategories().then(setCategories);
+  }, []);
+
   const closeModal = () => {
     setIsClosing(true);
     setTimeout(() => { setShowModal(false); setEditingBm(null); setIsClosing(false); }, 150);
   };
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    e: React.FormEvent<HTMLFormElement>,
+    categoryId: number,
+    categoryName: string,
+  ) {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
+
     try {
-      if (editingBm) await EditBookark({ customTitle: data.name as string, newUrl: data.site as string, id: editingBm.id });
-      else await CreateBookmark(data.site as string);
-    } catch (err) { console.error(err); }
+      // Si es categoría nueva (id = -1), crearla primero
+      let finalCatId   = categoryId;
+      let finalCatName = categoryName;
+
+      if (categoryId === -1 && categoryName) {
+        const newCat = await createCategory(categoryName);
+        finalCatId   = newCat.id;
+        finalCatName = newCat.name;
+        // Actualizar lista local de categorías
+        setCategories(prev => [...prev, newCat].sort((a, b) => a.name.localeCompare(b.name)));
+      }
+
+      if (editingBm) {
+        await EditBookark({
+          customTitle: data.name as string,
+          newUrl: data.site as string,
+          id: editingBm.id,
+          categoryId: finalCatId,
+          categoryName: finalCatName,
+        });
+      } else {
+        await CreateBookmark(data.site as string, finalCatId, finalCatName);
+      }
+    } catch (err) {
+      console.error(err);
+    }
     closeModal();
   }
 
@@ -53,9 +88,7 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
       onMouseEnter={e => { if (isListView !== list) (e.currentTarget as HTMLElement).style.color = 'var(--text-mid)'; }}
       onMouseLeave={e => { if (isListView !== list) (e.currentTarget as HTMLElement).style.color = 'var(--text-lo)'; }}
     >
-      {list
-        ? <IconLayoutList size={14} stroke={1.75} />
-        : <IconLayoutGrid size={14} stroke={1.75} />}
+      {list ? <IconLayoutList size={14} stroke={1.75} /> : <IconLayoutGrid size={14} stroke={1.75} />}
     </button>
   );
 
@@ -70,7 +103,7 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
           Bookmarks
         </a>
 
-        <div style={{ display: 'flex', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {!isMobile && (
             <div style={{ display: 'flex', border: '1px solid var(--border-dim)', borderRadius: '2px', overflow: 'hidden' }}>
               <ViewBtn list={false} />
@@ -96,12 +129,26 @@ const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
 
       <div className="section-body">
         {(isMobile || isListView)
-          ? <CompactList bookmarks={bookmarks} />
-          : <BigList bookmarks={bookmarks} />}
+          ? <CompactList
+              bookmarks={bookmarks}
+              onEdit={b => { setEditingBm({ id: b.id, bookmark: b }); setShowModal(true); }}
+              onDelete={async id => { await DeleteBookmark(id); }}
+            />
+          : <BigList
+              bookmarks={bookmarks}
+              onEdit={b => { setEditingBm({ id: b.id, bookmark: b }); setShowModal(true); }}
+              onDelete={async id => { await DeleteBookmark(id); }}
+            />}
       </div>
 
-      <BookmarkModal isOpen={showModal} isClosing={isClosing}
-        editingBookmark={editingBm} onClose={closeModal} onSubmit={handleSubmit} />
+      <BookmarkModal
+        isOpen={showModal}
+        isClosing={isClosing}
+        editingBookmark={editingBm}
+        categories={categories}
+        onClose={closeModal}
+        onSubmit={handleSubmit}
+      />
     </div>
   );
 };

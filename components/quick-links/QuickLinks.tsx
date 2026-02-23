@@ -16,7 +16,7 @@ const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => (
     <div className="section-body">
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
         gap: 0,
       }}>
         {quickLinks.map((link, i) => (
