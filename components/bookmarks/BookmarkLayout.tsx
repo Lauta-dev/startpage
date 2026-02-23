@@ -5,6 +5,7 @@ import type { Bookmark } from '@/types/bookmark';
 import AccentPicker from '@/components/ui/AccentPicker';
 import BigList from './cards/BigList';
 import BigListMobile from './cards/BigListMobile';
+import { IconLayoutGrid, IconLayoutList } from '@tabler/icons-react';
 
 type ViewMode = 'card' | 'list';
 
@@ -16,6 +17,7 @@ export const BookmarkLayout: React.FC<Props> = ({ bookmarks }) => {
   const [view, setView]                       = useState<ViewMode>('card');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<string | null>(null);
   const [searchQuery, setSearchQuery]         = useState('');
+  const [isListView, setIsListView]       = useState(false);
 
   const categories = useMemo(() => {
     const cats = [...new Set(bookmarks.map(b => b.category))];
@@ -172,40 +174,24 @@ export const BookmarkLayout: React.FC<Props> = ({ bookmarks }) => {
           </div>
 
           {/* View toggle */}
-          <div
-            className="flex overflow-hidden"
-            style={{ border: '1px solid var(--border-dim)', borderRadius: '2px' }}
-          >
-            {(['card', 'list'] as const).map((v, i) => (
+          <div className="bm-view-toggle flex" style={{ border: '1px solid var(--border-dim)', borderRadius: '2px' }}>
+            {([false, true] as const).map((listMode, i) => (
               <button
-                key={v}
-                onClick={() => setView(v)}
-                className="flex items-center cursor-pointer transition-all duration-120"
+                key={String(listMode)}
+                onClick={() => setIsListView(listMode)}
+                className="flex items-center p-1.5 cursor-pointer"
                 style={{
-                  background: view === v ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent',
+                  background: isListView === listMode ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent',
                   border: 'none',
                   borderRight: i === 0 ? '1px solid var(--border-dim)' : 'none',
-                  padding: '5px 9px',
-                  color: view === v ? 'var(--accent)' : 'var(--text-lo)',
-                  fontFamily: 'inherit',
+                  color: isListView === listMode ? 'var(--accent)' : 'var(--text-lo)',
+                  transition: 'color 0.15s, background 0.15s',
                 }}
-                onMouseEnter={e => { if (view !== v) (e.currentTarget as HTMLElement).style.color = 'var(--text-mid)'; }}
-                onMouseLeave={e => { if (view !== v) (e.currentTarget as HTMLElement).style.color = 'var(--text-lo)'; }}
               >
-                {v === 'card' ? (
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <rect x="1" y="1" width="6" height="6" rx="1" fill="currentColor" />
-                    <rect x="9" y="1" width="6" height="6" rx="1" fill="currentColor" />
-                    <rect x="1" y="9" width="6" height="6" rx="1" fill="currentColor" />
-                    <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" />
-                  </svg>
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <rect x="1" y="2.5" width="14" height="2" rx="1" fill="currentColor" />
-                    <rect x="1" y="7" width="14" height="2" rx="1" fill="currentColor" />
-                    <rect x="1" y="11.5" width="14" height="2" rx="1" fill="currentColor" />
-                  </svg>
-                )}
+                {listMode
+                  ? <IconLayoutList size={18} stroke={1.75} />
+                  : <IconLayoutGrid size={18} stroke={1.75} />
+                }
               </button>
             ))}
           </div>
@@ -265,14 +251,19 @@ export const BookmarkLayout: React.FC<Props> = ({ bookmarks }) => {
               {searchQuery && ` para "${searchQuery}"`}
             </div>
           )}
+          
 
           {filteredBookmarks.length > 0 && Object.entries(groupedByCategory).map(([cat, items]) => (
             <React.Fragment key={cat}>
               {hasMultipleCategories && <CategoryLabel cat={cat} count={items.length} />}
-              {view === 'card'
-                ? <BigList bookmarks={items} />
-                : <BigListMobile bookmarks={items} />
-              }
+              <div className="section-body">
+                <div className={isListView ? 'hidden' : 'bm-card-view'}>
+                  <BigList bookmarks={bookmarks} />
+                </div>
+                <div className={isListView ? 'block' : 'bm-feed-view'}>
+                  <BigListMobile bookmarks={bookmarks} />
+                </div>
+              </div>
             </React.Fragment>
           ))}
         </div>
