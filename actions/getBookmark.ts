@@ -5,7 +5,7 @@ export default async function getBookmarks() {
   const query = `
       SELECT id, title, url, og_image, og_description, og_title, category, created_at
       FROM bookmarks
-      ORDER BY created_at DESC LIMIT 3 `;
+      ORDER BY created_at DESC LIMIT 6 `;
   const result = await client.execute(query);
  
   const rows = result.rows.map(({

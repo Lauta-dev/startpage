@@ -1,350 +1,103 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
-/* ── Nord Color System ───────────────────────────────────────
-   Polar Night  →  backgrounds & surfaces
-   Snow Storm   →  text
-   Frost        →  accents & interactive
-   Aurora       →  semantic states
-──────────────────────────────────────────────────────────── */
 /* ══════════════════════════════════════════════════════════
-   Ayu Palette
-   Dark + Light mode tokens siguiendo la misma estructura Nord.
-   
-   Ayu Dark:  fondos casi negros con tinte azul petróleo
-   Ayu Light: fondos crema suave, texto carbón cálido
-   
-   Colores originales Ayu:
-     bg       #0b0e14  #0d1017  #131721  #1a2232
-     text     #bfbdb6  #8a9199  #3d4654
-     accent   #ffb454  (naranja dorado, default)
-     success  #aad94c
-     danger   #f07178
-     warning  #ffb454
-     info     #73b8ff
+   Terminal Dark — variables idénticas al HTML de referencia
 ══════════════════════════════════════════════════════════ */
-/*
-*onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
-            }}
-*
-* **/
-
 :root {
-  /* ── Ayu raw color scale (dark) ── */
-  --ayu0: #0b0e14;
-  /* bg más profundo */
-  --ayu1: #0d1017;
-  /* bg base         */
-  --ayu2: #131721;
-  /* bg elevated     */
-  --ayu3: #1a2232;
-  /* bg surface      */
-  --ayu4: #222d3f;
-  /* bg overlay      */
-  --ayu5: #3d4654;
-  /* border / muted  */
-  --ayu6: #5c6773;
-  /* text muted      */
-  --ayu7: #8a9199;
-  /* text secondary  */
-  --ayu8: #bfbdb6;
-  /* text primary    */
-  --ayu9: #e6e1cf;
-  /* text bright     */
+  --accent:      #ffb454;
+  --accent-text: #0a0c0f;
 
-  /* ── Ayu semantic colors ── */
-  --ayu-accent: #ffb454;
-  /* naranja dorado  */
-  --ayu-success: #aad94c;
-  /* verde lima      */
-  --ayu-danger: #f07178;
-  /* rojo coral      */
-  --ayu-warning: #ffb454;
-  /* mismo naranja   */
-  --ayu-info: #73b8ff;
-  /* azul cielo      */
-  --ayu-special: #d2a6ff;
-  /* lavanda         */
-  --ayu-string: #aad94c;
-  /* verde           */
-  --ayu-keyword: #ff8f40;
-  /* naranja intenso */
+  /* Backgrounds */
+  --bg:          #0a0c0f;
+  --bg-raised:   #0e1116;
+  --bg-surface:  #131920;
+  --bg-hover:    #161d26;
 
-  /* ── Accent — default naranja dorado, overridden by AccentPicker ── */
-  --accent: #ffb454;
-  --accent-text: #0d1017;
-  /* recalculado por JS según contraste WCAG */
+  /* Borders */
+  --border:      #1c2530;
+  --border-dim:  #141c24;
 
-  /* ── Semantic surface tokens (dark mode defaults) ── */
-  --bg-base: #0b0e14;
-  --bg-elevated: #0d1017;
-  --bg-surface: #131721;
-  --bg-overlay: #1a2232;
+  /* Text */
+  --text-hi:     #e8ecf2;
+  --text-mid:    #8fa3b8;
+  --text-lo:     #4e6278;
 
-  --text-primary: #bfbdb6;
-  --text-secondary: #8a9199;
-  --text-muted: #3d4654;
+  /* Aliases para compatibilidad con componentes existentes */
+  --bg-base:        var(--bg);
+  --bg-elevated:    var(--bg-raised);
+  --bg-overlay:     var(--bg-hover);
+  --bg-base:        var(--bg);
+  --text-primary:   var(--text-hi);
+  --text-secondary: var(--text-mid);
+  --text-muted:     var(--text-lo);
+  --border-subtle:  var(--border-dim);
 
-  --border-subtle: #1a2232;
-  --border-dim: #131721;
-  --border: #1e2b3d;
+  --modal-backdrop: rgba(5, 8, 12, 0.92);
 
-  --modal-backdrop: rgba(11, 14, 20, 0.88);
-
-  /* ── Semantic UI colors ── */
-  --color-success: #aad94c;
-  --color-success-bg: color-mix(in srgb, #aad94c 12%, transparent);
-  --color-success-border: color-mix(in srgb, #aad94c 28%, transparent);
-
-  --color-danger: #f07178;
-  --color-danger-bg: color-mix(in srgb, #f07178 12%, transparent);
-  --color-danger-border: color-mix(in srgb, #f07178 28%, transparent);
-
-  --color-warning: #ffb454;
-  --color-warning-bg: color-mix(in srgb, #ffb454 12%, transparent);
-  --color-warning-border: color-mix(in srgb, #ffb454 28%, transparent);
-
-  --color-info: #73b8ff;
-  --color-info-bg: color-mix(in srgb, #73b8ff 12%, transparent);
-  --color-info-border: color-mix(in srgb, #73b8ff 28%, transparent);
+  --color-success:        #aad94c;
+  --color-success-bg:     color-mix(in srgb, #aad94c 10%, transparent);
+  --color-success-border: color-mix(in srgb, #aad94c 25%, transparent);
+  --color-danger:         #f07178;
+  --color-danger-bg:      color-mix(in srgb, #f07178 10%, transparent);
+  --color-danger-border:  color-mix(in srgb, #f07178 25%, transparent);
 }
 
-/* ══════════════════════════════════════════════════════════
-   Ayu Light overrides
-   Fondos en crema/arena, texto en carbón cálido,
-   mismo sistema semántico con colores más saturados.
-══════════════════════════════════════════════════════════ */
-[data-theme="light"] {
-  /* ── Ayu Light surface tokens ── */
-  --bg-base: #fafafa;
-  --bg-elevated: #f3f4f5;
-  --bg-surface: #eaebed;
-  --bg-overlay: #e0e1e4;
-
-  --text-primary: #1a1e28;
-  --text-secondary: #4d5566;
-  --text-muted: #9aa0ac;
-
-  --border-subtle: #dfe1e5;
-  --border-dim: #e8eaed;
-  --border: #d6d8dd;
-
-  --modal-backdrop: rgba(26, 30, 40, 0.45);
-
-  /* ── Accent en light (más saturado para contraste) ── */
-  --accent: #f29718;
-  --accent-text: #fafafa;
-
-  /* ── Semantic UI colors (light — más vibrantes) ── */
-  --color-success: #6cbf3a;
-  --color-success-bg: color-mix(in srgb, #6cbf3a 10%, transparent);
-  --color-success-border: color-mix(in srgb, #6cbf3a 25%, transparent);
-
-  --color-danger: #e3444b;
-  --color-danger-bg: color-mix(in srgb, #e3444b 10%, transparent);
-  --color-danger-border: color-mix(in srgb, #e3444b 25%, transparent);
-
-  --color-warning: #f29718;
-  --color-warning-bg: color-mix(in srgb, #f29718 10%, transparent);
-  --color-warning-border: color-mix(in srgb, #f29718 25%, transparent);
-
-  --color-info: #399ee6;
-  --color-info-bg: color-mix(in srgb, #399ee6 10%, transparent);
-  --color-info-border: color-mix(in srgb, #399ee6 25%, transparent);
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes fadeOut {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-/* ══════════════════════════════════════════════════════════
-   Ayu — Gradients & Backgrounds
-   Reemplaza los gradientes Nord por equivalentes Ayu.
-   Dark: fondos azul-petróleo profundo con velo naranja sutil.
-   Light: crema cálida con tinte ámbar desde arriba.
-══════════════════════════════════════════════════════════ */
-
+/* ── Base ── */
 html {
   min-height: 100%;
-  transition: background 0.3s ease;
-
-  /* Dark: base negra con velo azul petróleo */
-  background: radial-gradient(ellipse 90% 60% at 50% 0%,
-      #1a2232 0%,
-      /* --bg-overlay: azul petróleo */
-      #0b0e14 65%
-      /* --bg-base: negro profundo   */
-    );
-}
-
-html[data-theme="light"] {
-  /* Light: crema blanca con tinte ámbar suave desde arriba */
-  background: radial-gradient(ellipse 80% 60% at 50% 0%,
-      #ede8df 0%,
-      /* crema ámbar cálida  */
-      #fafafa 70%
-      /* blanco hueso limpio */
-    );
+  background: var(--bg);
+  color: var(--text-hi);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
 }
 
 body {
   background: transparent;
   margin: 0;
   min-height: 100vh;
-  color: var(--text-secondary);
-  transition: color 0.3s ease, background 0.3s ease;
+  color: var(--text-mid);
 }
 
-.modal-backdrop {
-  background: var(--modal-backdrop);
-}
-
-/* ── Section cards ── */
-.section-card {
-  border-radius: 1rem;
-  position: relative;
-  /* Dark: gradiente de surface a elevated con leve tinte cálido */
-  background: linear-gradient(135deg,
-      var(--bg-surface) 0%,
-      var(--bg-elevated) 100%);
-  transition: background 0.3s ease;
-}
-
-/* Light override: gradiente más claro y cálido */
-[data-theme="light"] .section-card {
-  background: linear-gradient(135deg,
-      #f3f4f5 0%,
-      /* --bg-elevated */
-      #fafafa 100%
-      /* --bg-base     */
-    );
-}
-
-/* ── Gradient border — accent naranja Ayu ── */
-.section-card::before {
+/* ── Scanlines — igual al HTML ── */
+body::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-
-  /* Dark: accent naranja → border azul → accent naranja */
-  background: linear-gradient(135deg,
-      var(--accent) 0%,
-      /* #ffb454 naranja dorado */
-      var(--border) 50%,
-      /* #1e2b3d azul oscuro    */
-      var(--accent) 100%);
-
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255,255,255,0.013) 2px,
+    rgba(255,255,255,0.013) 4px
+  );
   pointer-events: none;
-  opacity: 0.35;
-  transition: opacity 0.2s ease;
+  z-index: 9999;
 }
 
-/* Light: borde más visible con accent ámbar saturado */
-[data-theme="light"] .section-card::before {
-  background: linear-gradient(135deg,
-      #f29718 0%,
-      /* accent light más saturado */
-      #d6d8dd 50%,
-      /* --border light            */
-      #f29718 100%);
-  opacity: 0.45;
+/* ── Section card — shell box del HTML ── */
+.section-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
 }
 
-/* ── Hover: borde más brillante ── */
-.section-card:hover::before {
-  opacity: 0.6;
-}
-
-/* Botones apagados en desktop, encendidos en mobile y al hover */
-.dim-btn {
-  color: var(--accent);
-  /* encendido en mobile (base) */
-}
-
+/* ── dim-btn ── */
+.dim-btn { color: var(--accent); }
 @media (min-width: 640px) {
-  .dim-btn {
-    color: var(--text-muted);
-  }
-
-  .dim-btn:hover {
-    color: var(--accent);
-    /* encendido al hover en desktop */
-  }
+  .dim-btn { color: var(--text-lo); }
+  .dim-btn:hover { color: var(--accent); }
 }
 
-/* Evita el flash blanco al abrir modales con modal-open */
-.modal {
-  background: transparent;
-}
+/* ── Modal ── */
+.modal { background: transparent; }
+.modal.modal-open { background: transparent; }
+dialog::backdrop { background: var(--modal-backdrop); }
+.modal-backdrop { background: var(--modal-backdrop); }
 
-.modal.modal-open {
-  background: transparent;
-}
-
-/* Backdrop nativo del <dialog> */
-dialog::backdrop {
-  background: var(--modal-backdrop);
-}
-
-/* ─────────────────────────────────────────
-   Bang pill — integrated into the search bar
-   No border, no background: feels like part
-   of the input itself.
-───────────────────────────────────────── */
-
+/* ── Bang pill ── */
 .bang-pill {
   display: flex;
   align-items: center;
@@ -354,112 +107,82 @@ dialog::backdrop {
   flex-shrink: 0;
   overflow: hidden;
   cursor: pointer;
-
-  /* open state */
   max-width: 0;
   opacity: 0;
   animation: bang-pill-reveal 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-
-/* ── open ── */
 @keyframes bang-pill-reveal {
-  0% {
-    max-width: 0;
-    opacity: 0;
-    padding-left: 0;
-    gap: 0;
-  }
-
-  25% {
-    opacity: 1;
-  }
-
-  100% {
-    max-width: 220px;
-    opacity: 1;
-    padding-left: 6px;
-    gap: 6px;
-  }
+  0%   { max-width: 0; opacity: 0; padding-left: 0; gap: 0; }
+  25%  { opacity: 1; }
+  100% { max-width: 220px; opacity: 1; padding-left: 6px; gap: 6px; }
 }
-
-/* ── close ── */
 .bang-pill--closing {
   animation: bang-pill-collapse 0.28s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
-
 @keyframes bang-pill-collapse {
-  0% {
-    max-width: 220px;
-    opacity: 1;
-    padding-left: 6px;
-    gap: 6px;
-  }
-
-  45% {
-    opacity: 0;
-  }
-
-  100% {
-    max-width: 0;
-    opacity: 0;
-    padding-left: 0;
-    gap: 0;
-  }
+  0%   { max-width: 220px; opacity: 1; padding-left: 6px; gap: 6px; }
+  45%  { opacity: 0; }
+  100% { max-width: 0; opacity: 0; padding-left: 0; gap: 0; }
 }
-
-/* ── children fade in staggered on open ── */
 .bang-pill__icon {
-  width: 15px;
-  height: 15px;
-  border-radius: 3px;
-  object-fit: contain;
-  flex-shrink: 0;
-  opacity: 0;
+  width: 15px; height: 15px; border-radius: 2px;
+  object-fit: contain; flex-shrink: 0; opacity: 0;
   animation: bang-fade-in 0.15s ease 0.18s forwards;
 }
-
 .bang-pill__name {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  opacity: 0;
-  animation: bang-fade-in 0.15s ease 0.22s forwards;
+  font-size: 0.8rem; font-weight: 600; color: var(--accent);
+  opacity: 0; animation: bang-fade-in 0.15s ease 0.22s forwards;
 }
-
-/* vertical rule between pill and text cursor */
 .bang-pill__divider {
-  width: 1px;
-  height: 18px;
-  background: var(--border);
-  flex-shrink: 0;
-  margin-left: 2px;
-  opacity: 0;
+  width: 1px; height: 18px; background: var(--border);
+  flex-shrink: 0; margin-left: 2px; opacity: 0;
   animation: bang-fade-in 0.15s ease 0.26s forwards;
 }
-
-@keyframes bang-fade-in {
-  to {
-    opacity: 1;
-  }
-}
-
-/* ── children fade out instantly on close ── */
+@keyframes bang-fade-in { to { opacity: 1; } }
 .bang-pill--closing .bang-pill__icon,
 .bang-pill--closing .bang-pill__name,
 .bang-pill--closing .bang-pill__divider {
   animation: bang-fade-out 0.1s ease forwards;
 }
+@keyframes bang-fade-out { to { opacity: 0; } }
 
-@keyframes bang-fade-out {
-  to {
-    opacity: 0;
-  }
+/* ── Animations ── */
+@keyframes slideUp   { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+@keyframes slideDown { from { opacity:1; transform:translateY(0); }    to { opacity:0; transform:translateY(14px); } }
+@keyframes fadeIn    { from { opacity:0; } to { opacity:1; } }
+@keyframes fadeOut   { from { opacity:1; } to { opacity:0; } }
+
+/* ── Section — estructura exacta del HTML de referencia ── */
+.section {
+  margin-bottom: 20px;
 }
 
-.l {
-  background-color: var(--bg-elevated);
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border: 1px solid var(--border-dim);
+  border-bottom: none;
+  border-radius: 2px 2px 0 0;
+  background: var(--bg);
 }
 
-:is(.list > :not(:last-child).list-row, .list > :not(:last-child) .list-row)::after {
-  border: none !important;
+.section-body {
+  border: 1px solid var(--border);
+  border-radius: 0 0 2px 2px;
+  background: var(--bg-raised);
+  overflow: hidden;
 }
+
+/* label // prefix */
+.section-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-lo);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.section-label::before { content: '//'; color: var(--text-lo); opacity: 0.5; }

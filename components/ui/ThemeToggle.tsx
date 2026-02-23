@@ -1,12 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { IconSun, IconMoon } from '@tabler/icons-react';
 
 const STORAGE_KEY = 'nord-theme';
 
 const ThemeToggle: React.FC = () => {
-  // Arrancamos en null para evitar mismatch de hidratación
   const [isDark, setIsDark] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -27,44 +25,58 @@ const ThemeToggle: React.FC = () => {
     localStorage.setItem(STORAGE_KEY, next ? 'dark' : 'light');
   }
 
-  // Placeholder del mismo tamaño mientras carga para evitar layout shift
+  // Placeholder mismo tamaño para evitar layout shift
   if (isDark === null) {
-    return <div style={{ width: '3.25rem', height: '1.75rem' }} />;
+    return <div style={{ width: '36px', height: '18px' }} />;
   }
 
   return (
-    <button
-      onClick={toggle}
-      className="relative flex items-center cursor-pointer flex-shrink-0"
-      style={{ width: '3.25rem', height: '1.75rem' }}
-      aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+    <div
+      style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
     >
-      {/* Track */}
+      <span style={{
+        fontSize: '0.58rem',
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase',
+        color: 'var(--text-lo)',
+      }}>
+        {isDark ? 'Dark' : 'Light'}
+      </span>
+
+      {/* Toggle — rectangular, igual al HTML */}
       <div
-        className="absolute inset-0 rounded-full transition-all duration-300"
+        onClick={toggle}
+        aria-label={isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
         style={{
-          background: isDark ? 'var(--bg-overlay)' : 'var(--accent)',
-          border: '1px solid var(--border)',
-        }}
-      />
-      {/* Thumb */}
-      <div
-        className="absolute flex items-center justify-center rounded-full transition-all duration-300"
-        style={{
-          width: '1.375rem',
-          height: '1.375rem',
-          background: isDark ? 'var(--bg-surface)' : 'var(--text-primary)',
-          left: isDark ? '2px' : 'calc(100% - 24px)',
-          top: '50%',
-          transform: 'translateY(-50%)',
+          position: 'relative',
+          width: '36px',
+          height: '18px',
+          cursor: 'pointer',
+          flexShrink: 0,
         }}
       >
-        {isDark
-          ? <IconMoon size={12} stroke={2} style={{ color: 'var(--accent)' }} />
-          : <IconSun  size={12} stroke={2} style={{ color: 'var(--accent)' }} />
-        }
+        {/* Track */}
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          borderRadius: '2px',
+          background: isDark ? 'var(--bg-surface)' : `color-mix(in srgb, var(--accent) 8%, var(--bg))`,
+          border: `1px solid ${isDark ? 'var(--border)' : 'var(--accent)'}`,
+          transition: 'all 0.2s',
+        }} />
+        {/* Thumb */}
+        <div style={{
+          position: 'absolute',
+          top: '2px',
+          left: isDark ? '2px' : 'calc(100% - 14px)',
+          width: '12px',
+          height: '12px',
+          borderRadius: '1px',
+          background: isDark ? 'var(--text-mid)' : 'var(--accent)',
+          transition: 'all 0.2s',
+        }} />
       </div>
-    </button>
+    </div>
   );
 };
 

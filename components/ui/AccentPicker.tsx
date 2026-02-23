@@ -75,14 +75,26 @@ const AccentPicker: React.FC = () => {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 cursor-pointer"
+        className="flex items-center gap-2 cursor-pointer"
         style={{
+          padding: '5px 10px',
           background: 'var(--bg-surface)',
           border: '1px solid var(--border)',
-          color: 'var(--text-secondary)',
+          borderRadius: '2px',
+          color: 'var(--text-mid)',
+          fontFamily: 'inherit',
+          fontSize: '0.65rem',
+          letterSpacing: '0.06em',
+          transition: 'border-color 0.15s, color 0.15s',
         }}
-        onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
-        onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+        onMouseEnter={e => {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
+          (e.currentTarget as HTMLElement).style.color = 'var(--text-hi)';
+        }}
+        onMouseLeave={e => {
+          (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+          (e.currentTarget as HTMLElement).style.color = 'var(--text-mid)';
+        }}
       >
         {/*
           El swatch usa var(--accent) directamente desde CSS.
@@ -109,10 +121,11 @@ const AccentPicker: React.FC = () => {
 
       {open && (
         <div
-          className="absolute right-0 mt-2 w-48 rounded-xl overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
+          className="absolute right-0 mt-2 w-48 overflow-hidden z-50 max-h-[70vh] overflow-y-auto"
           style={{
             background: 'var(--bg-surface)',
             border: '1px solid var(--border)',
+            borderRadius: '2px',
           }}
         >
           {ACCENTS.map(a => (

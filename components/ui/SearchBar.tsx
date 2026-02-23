@@ -16,14 +16,16 @@ function getFavicon(entry: BangEntry): string {
   }
 }
 
+const mono = "'IBM Plex Mono', monospace";
+
 const SearchBar: React.FC = () => {
-  const [inputValue, setInputValue]       = useState('');
-  const [activeBang, setActiveBang]       = useState<{ code: string; entry: BangEntry } | null>(null);
-  const [isClosing, setIsClosing]         = useState(false);
-  const [placeholderText, setPlaceholderText] = useState('Buscar… o usa !w, !yt, !gh');
+  const [inputValue, setInputValue]           = useState('');
+  const [activeBang, setActiveBang]           = useState<{ code: string; entry: BangEntry } | null>(null);
+  const [isClosing, setIsClosing]             = useState(false);
+  const [placeholderText, setPlaceholderText] = useState('buscar… o usa !w, !yt, !gh');
   const [placeholderVisible, setPlaceholderVisible] = useState(true);
-  const [dropdownItems, setDropdownItems] = useState<{ code: string; entry: BangEntry }[]>([]);
-  const [focusedIndex, setFocusedIndex]   = useState(0);
+  const [dropdownItems, setDropdownItems]     = useState<{ code: string; entry: BangEntry }[]>([]);
+  const [focusedIndex, setFocusedIndex]       = useState(0);
   const inputRef     = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +66,7 @@ const SearchBar: React.FC = () => {
   const removeBang = () => {
     if (!activeBang || isClosing) return;
     setIsClosing(true);
-    crossfadePlaceholder('Buscar… o usa !w, !yt, !gh');
+    crossfadePlaceholder('buscar… o usa !w, !yt, !gh');
     setTimeout(() => {
       setActiveBang(null);
       setIsClosing(false);
@@ -84,7 +86,6 @@ const SearchBar: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     if (activeBang) { setInputValue(val); return; }
-
     const spaceMatch = val.match(/^(![\w]+) $/);
     if (spaceMatch) {
       const code = spaceMatch[1].toLowerCase();
@@ -106,13 +107,11 @@ const SearchBar: React.FC = () => {
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Ctrl+Space → open bang suggestions
     if (e.ctrlKey && e.code === 'Space') {
       e.preventDefault();
       if (!activeBang) openBangSuggestions();
       return;
     }
-
     if (dropdownItems.length > 0) {
       if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedIndex(i => Math.min(i + 1, dropdownItems.length - 1)); return; }
       if (e.key === 'ArrowUp')   { e.preventDefault(); setFocusedIndex(i => Math.max(i - 1, 0)); return; }
@@ -122,22 +121,18 @@ const SearchBar: React.FC = () => {
       }
       if (e.key === 'Escape') { setDropdownItems([]); return; }
     }
-
     if (e.key === 'Backspace' && inputValue === '' && activeBang) { removeBang(); return; }
-
     if (e.key === 'Enter') {
       const query = inputValue.trim();
       if (activeBang) {
         if (!query) return;
-        const url = activeBang.entry.url.replaceAll('[[user]]', encodeURIComponent(query));
-        window.open(url, '_blank');
+        window.open(activeBang.entry.url.replaceAll('[[user]]', encodeURIComponent(query)), '_blank');
         return;
       }
       const parts = query.split(' ');
       const inlineBang = (bangs as Record<string, BangEntry>)[parts[0]?.toLowerCase()];
       if (inlineBang) {
-        const url = inlineBang.url.replaceAll('[[user]]', encodeURIComponent(parts.slice(1).join(' ')));
-        window.open(url, '_blank');
+        window.open(inlineBang.url.replaceAll('[[user]]', encodeURIComponent(parts.slice(1).join(' '))), '_blank');
         return;
       }
       if (query) window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
@@ -145,17 +140,28 @@ const SearchBar: React.FC = () => {
   };
 
   return (
-    <div ref={containerRef} className="mb-6 sm:mb-8 relative">
+    <div ref={containerRef} style={{ marginBottom: '24px', position: 'relative' }}>
 
-      {/* Search bar */}
+      {/* ── search-bar ── */}
       <div
-        className="flex items-center w-full h-12 rounded-xl transition-all px-2"
-        style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
+        className="search-bar-container"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 0,
+          border: '1px solid var(--border)',
+          borderRadius: '2px',
+          background: 'var(--bg-raised)',
+          transition: 'border-color 0.15s',
+          height: '44px',
+        }}
+        /* focus-within via React — cambia border cuando el input tiene foco */
         onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
         onBlur={e  => (e.currentTarget.style.borderColor = 'var(--border)')}
       >
-        {/* Bang pill — no border/background, lives inside the input */}
-        {activeBang && (
+        {/* .search-prompt ó .search-bang según si hay bang activo */}
+        {activeBang ? (
+          /* bang activo → pill igual al HTML */
           <div
             className={`bang-pill${isClosing ? ' bang-pill--closing' : ''}`}
             onClick={removeBang}
@@ -166,64 +172,133 @@ const SearchBar: React.FC = () => {
             <span className="bang-pill__name">{activeBang.entry.name}</span>
             <span className="bang-pill__divider" />
           </div>
+        ) : (
+          /* .search-prompt */
+          <span style={{
+            padding: '0 12px',
+            color: 'var(--accent)',
+            fontSize: '1rem',
+            fontWeight: 700,
+            flexShrink: 0,
+            userSelect: 'none',
+            borderRight: '1px solid var(--border-dim)',
+            display: 'flex',
+            alignItems: 'center',
+            height: '100%',
+          }}>›</span>
         )}
 
-        <div className="relative flex-1 h-full flex items-center">
-          {/* Fake animated placeholder */}
+        {/* input area */}
+        <div style={{ position: 'relative', flex: 1, height: '100%', display: 'flex', alignItems: 'center' }}>
+          {/* animated crossfade placeholder (italic, color text-lo) */}
           {inputValue === '' && (
             <span
-              className="search-placeholder absolute left-1 pointer-events-none select-none text-base transition-opacity duration-200"
               style={{
-                color: 'var(--text-muted, #666680)',
+                position: 'absolute',
+                left: '14px',
+                pointerEvents: 'none',
+                userSelect: 'none',
+                fontFamily: mono,
+                fontSize: '0.88rem',
+                color: 'var(--text-lo)',
+                fontStyle: 'italic',
                 opacity: placeholderVisible ? 1 : 0,
+                transition: 'opacity 0.2s',
               }}
             >
               {placeholderText}
             </span>
           )}
+          {/* .search-input */}
           <input
             ref={inputRef}
             type="text"
             value={inputValue}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            className="flex-1 w-full h-full bg-transparent focus:outline-none text-base px-1 placeholder:text-transparent"
-            style={{ color: 'var(--text-primary)' }}
+            style={{
+              flex: 1,
+              width: '100%',
+              height: '100%',
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontFamily: mono,
+              fontSize: '0.88rem',
+              color: 'var(--text-hi)',
+              padding: '0 14px',
+            }}
             autoComplete="off"
             spellCheck={false}
           />
         </div>
+
+        {/* .search-hint */}
+        {!activeBang && (
+          <span style={{
+            padding: '0 14px',
+            fontSize: '0.58rem',
+            color: 'var(--text-lo)',
+            flexShrink: 0,
+            letterSpacing: '0.06em',
+            whiteSpace: 'nowrap',
+          }}>
+            ctrl+space
+          </span>
+        )}
       </div>
 
-      {/* Dropdown suggestions */}
+      {/* ── .search-dropdown ── */}
       {dropdownItems.length > 0 && (
-        <ul
-          className="menu absolute z-50 w-full mt-1 rounded-xl shadow-lg p-1"
-          style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
-        >
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 4px)',
+          left: 0, right: 0,
+          background: 'var(--bg-raised)',
+          border: '1px solid var(--border)',
+          borderRadius: '2px',
+          zIndex: 50,
+          overflow: 'hidden',
+        }}>
           {dropdownItems.map(({ code, entry }, i) => (
-            <li key={code}>
-              <button
-                className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm transition-colors ${
-                  i === focusedIndex ? 'bg-base-300' : ''
-                }`}
-                style={{ color: 'var(--text-primary)' }}
-                onMouseEnter={() => setFocusedIndex(i)}
-                onMouseDown={e => { e.preventDefault(); applyBang(code, entry); }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={getFavicon(entry)} alt="" className="w-4 h-4 rounded-sm shrink-0" />
-                <span className="font-mono font-semibold w-12 shrink-0" style={{ color: 'var(--accent)' }}>
-                  {code}
-                </span>
-                <span className="flex-1 text-left">{entry.name}</span>
-              </button>
-            </li>
+            <div
+              key={code}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                padding: '9px 14px',
+                cursor: 'pointer',
+                borderBottom: '1px solid var(--border-dim)',
+                background: i === focusedIndex ? 'var(--bg-hover)' : 'transparent',
+                transition: 'background 0.1s',
+              }}
+              onMouseEnter={() => setFocusedIndex(i)}
+              onMouseDown={e => { e.preventDefault(); applyBang(code, entry); }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={getFavicon(entry)} alt="" style={{ width: '13px', height: '13px', borderRadius: '2px', opacity: 0.7, flexShrink: 0 }} />
+              <span style={{ fontFamily: mono, fontSize: '0.68rem', fontWeight: 600, color: 'var(--accent)', width: '48px', flexShrink: 0 }}>
+                {code}
+              </span>
+              <span style={{ fontFamily: mono, fontSize: '0.72rem', color: 'var(--text-mid)', flex: 1 }}>
+                {entry.name}
+              </span>
+            </div>
           ))}
-          <li className="px-3 pt-1 pb-0.5">
-            <span className="text-xs opacity-40">↑↓ navegar · ↵ / Tab seleccionar · Esc cerrar</span>
-          </li>
-        </ul>
+          {/* .dropdown-footer */}
+          <div style={{
+            padding: '6px 14px',
+            fontSize: '0.55rem',
+            color: 'var(--text-lo)',
+            letterSpacing: '0.06em',
+            borderTop: '1px solid var(--border-dim)',
+            background: 'var(--bg)',
+            fontFamily: mono,
+          }}>
+            ↑↓ navegar · ↵ / Tab seleccionar · Esc cerrar
+          </div>
+        </div>
       )}
     </div>
   );

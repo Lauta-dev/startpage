@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { IconClock } from '@tabler/icons-react';
 
 const Clock: React.FC = () => {
   const [dateTime, setDateTime] = useState<Date | null>(null);
@@ -12,33 +11,47 @@ const Clock: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (date: Date): string =>
-    date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', hour12: false });
+  const hours   = dateTime ? String(dateTime.getHours()).padStart(2, '0')   : '00';
+  const minutes = dateTime ? String(dateTime.getMinutes()).padStart(2, '0') : '00';
 
   const formatDate = (date: Date): string => {
-    const days = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
-    const months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
-                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-    return `${days[date.getDay()]} ${date.getDate()} de ${months[date.getMonth()]}`;
+    const days   = ['DOMINGO','LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES','SÁBADO'];
+    const months = ['ENERO','FEBRERO','MARZO','ABRIL','MAYO','JUNIO',
+                    'JULIO','AGOSTO','SEPTIEMBRE','OCTUBRE','NOVIEMBRE','DICIEMBRE'];
+    return `${days[date.getDay()]} — ${date.getDate()} DE ${months[date.getMonth()]} DE ${date.getFullYear()}`;
   };
 
   return (
     <div>
+      {/* Time — matches .clock-time from HTML */}
       <div
-        className="text-5xl sm:text-6xl font-bold tracking-tight mb-1 flex items-center gap-3"
-        style={{ color: 'var(--text-primary)' }}
+        className="font-bold leading-none tracking-tight"
+        style={{ fontSize: '5.5rem', color: 'var(--text-hi)' }}
       >
-        <IconClock size={44} stroke={1.25} className="hidden sm:block" style={{ color: 'var(--text-muted)' }} />
-        {/* Placeholder invisible que reserva el mismo espacio que "00:00" */}
-        {dateTime ? formatTime(dateTime) : <span className="invisible">00:00</span>}
+        {hours}
+        <span style={{ color: 'var(--accent)', animation: 'blink-col 1s step-end infinite' }}>:</span>
+        {minutes}
       </div>
+
+      {/* Date — matches .clock-date from HTML */}
       <div
-        className="text-base sm:text-lg font-light tracking-wide sm:pl-[56px]"
-        style={{ color: 'var(--text-secondary)' }}
+        style={{
+          fontSize: '0.62rem',
+          letterSpacing: '0.1em',
+          color: 'var(--text-lo)',
+          marginTop: '8px',
+          textTransform: 'uppercase',
+        }}
       >
-        {/* Mismo truco: reserva espacio con texto invisible */}
-        {dateTime ? formatDate(dateTime) : <span className="invisible">Lunes 00 de Enero</span>}
+        {dateTime ? formatDate(dateTime) : <span style={{ visibility: 'hidden' }}>LUNES — 00 DE ENERO DE 0000</span>}
       </div>
+
+      <style>{`
+        @keyframes blink-col {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.2; }
+        }
+      `}</style>
     </div>
   );
 };

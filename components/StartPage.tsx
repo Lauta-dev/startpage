@@ -7,32 +7,34 @@ import BookmarkGrid from '@/components/bookmarks/BookmarkGrid';
 import { Bookmark } from '@/types/bookmark';
 
 interface QuickLink {
-  id: number;
-  name: string;
-  url: string;
-  icon: string | null;
-  position: number;
-  created_at: string;
+  id: number; name: string; url: string;
+  icon: string | null; position: number; created_at: string;
 }
 
-const StartPage = ({
-  bookmarks,
-  quickLinks
-}: { bookmarks: Bookmark[], quickLinks: QuickLink[] }) => {
-  return (
-    <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
-      <div className="flex justify-between items-start mb-8 sm:mb-10 pt-2">
-        <Clock />
-        <div className="flex items-center gap-3 pt-1">
-          <ThemeToggle />
-          <AccentPicker />
-        </div>
+const StartPage = ({ bookmarks, quickLinks }: { bookmarks: Bookmark[], quickLinks: QuickLink[] }) => (
+  <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 28px 80px' }}>
+
+    {/* HEADER — padding: 36px 0 32px igual al HTML */}
+    <div style={{
+      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+      padding: '36px 0 32px',
+      borderBottom: '1px solid var(--border-dim)',
+      marginBottom: '28px',
+    }}>
+      <Clock />
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px', paddingTop: '6px' }}>
+        <AccentPicker />
       </div>
-      <SearchBar />
-      <QuickLinks quickLinks={quickLinks} />
-      <BookmarkGrid bookmarks={bookmarks} />
     </div>
-  );
-};
+
+    {/* search-wrap margin-bottom: 24px */}
+    <div style={{ marginBottom: '24px' }}>
+      <SearchBar />
+    </div>
+
+    <QuickLinks quickLinks={quickLinks} />
+    <BookmarkGrid bookmarks={bookmarks} />
+  </div>
+);
 
 export default StartPage;

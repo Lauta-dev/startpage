@@ -1,115 +1,107 @@
 'use client';
 
-import React, { useState } from 'react';
-import { IconBook2, IconTrash, IconCirclePlus, IconEdit, IconLayoutGrid, IconLayoutList } from '@tabler/icons-react';
+import React, { useState, useEffect } from 'react';
+import { IconCirclePlus, IconLayoutGrid, IconLayoutList } from '@tabler/icons-react';
 import BookmarkModal from './bookmarkModal';
-import { CreateBookmark, DeleteBookmark, EditBookark } from '@/actions/Bookmarks';
+import { CreateBookmark, EditBookark } from '@/actions/Bookmarks';
 import CompactList from '@/components/bookmark-shared/CompactList';
 import { Bookmark } from '@/types/bookmark';
 import BigList from '@/components/bookmark-shared/BigList';
 
+const MOBILE = 640;
+
 const BookmarkGrid = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
-  const [showBookmarkModal, setShowBookmarkModal] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
-  const [editingBookmark, setEditingBookmark] = useState<{ id: number; bookmark: Bookmark } | null>(null);
-  const [isListView, setIsListView] = useState(false);
+  const [showModal, setShowModal]       = useState(false);
+  const [isClosing, setIsClosing]       = useState(false);
+  const [editingBm, setEditingBm]       = useState<{ id: number; bookmark: Bookmark } | null>(null);
+  const [isListView, setIsListView]     = useState(false);
+  const [isMobile, setIsMobile]         = useState(false);
 
-  const handleCloseModal = () => {
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE}px)`);
+    setIsMobile(mq.matches);
+    const h = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', h);
+    return () => mq.removeEventListener('change', h);
+  }, []);
+
+  const closeModal = () => {
     setIsClosing(true);
-    setTimeout(() => {
-      setShowBookmarkModal(false);
-      setEditingBookmark(null);
-      setIsClosing(false);
-    }, 150);
-  };
-
-  const handleEditBookmark = ({ bookmark, id }: { bookmark: Bookmark; id: number }) => {
-    setEditingBookmark({ id, bookmark });
-    setShowBookmarkModal(true);
+    setTimeout(() => { setShowModal(false); setEditingBm(null); setIsClosing(false); }, 150);
   };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
+    const data = Object.fromEntries(new FormData(e.currentTarget));
     try {
-      if (editingBookmark) {
-        await EditBookark({ customTitle: data.name as string, newUrl: data.site as string, id: editingBookmark.id });
-      } else {
-        await CreateBookmark(data.site as string);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-    handleCloseModal();
+      if (editingBm) await EditBookark({ customTitle: data.name as string, newUrl: data.site as string, id: editingBm.id });
+      else await CreateBookmark(data.site as string);
+    } catch (err) { console.error(err); }
+    closeModal();
   }
 
-  async function deleteBookmark(id: number) {
-    await DeleteBookmark(id);
-  }
+  const ViewBtn = ({ list }: { list: boolean }) => (
+    <button
+      onClick={() => setIsListView(list)}
+      style={{
+        background: isListView === list ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'transparent',
+        border: 'none', borderRight: list ? 'none' : '1px solid var(--border-dim)',
+        padding: '5px 8px', cursor: 'pointer',
+        color: isListView === list ? 'var(--accent)' : 'var(--text-lo)',
+        display: 'flex', alignItems: 'center', transition: 'all 0.12s',
+      }}
+      onMouseEnter={e => { if (isListView !== list) (e.currentTarget as HTMLElement).style.color = 'var(--text-mid)'; }}
+      onMouseLeave={e => { if (isListView !== list) (e.currentTarget as HTMLElement).style.color = 'var(--text-lo)'; }}
+    >
+      {list
+        ? <IconLayoutList size={14} stroke={1.75} />
+        : <IconLayoutGrid size={14} stroke={1.75} />}
+    </button>
+  );
 
   return (
-    <div className="section-card p-4 sm:p-5">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-5 gap-2 flex-wrap">
-        <a href="/bookmarks" className="text-xs font-semibold uppercase tracking-widest flex items-center gap-2"
-            style={{ color: 'var(--text-secondary)' }}>
-          <IconBook2 size={18} stroke={1.5} />
+    <div className="section">
+      <div className="section-head">
+        <a href="/bookmarks" className="section-label"
+          style={{ textDecoration: 'none', transition: 'color 0.15s' }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-lo)')}
+        >
           Bookmarks
         </a>
 
-        <div className="flex items-center gap-3">
-          {/* Toggle de vista */}
-          <div className="flex items-center rounded-lg overflow-hidden"
-               style={{ border: '1px solid var(--border)' }}>
-            <button
-              onClick={() => setIsListView(false)}
-              className="p-1.5 transition-colors duration-200 cursor-pointer"
-              style={{
-                background: !isListView ? 'var(--accent)' : 'transparent',
-                color: !isListView ? 'var(--accent-text)' : 'var(--text-muted)',
-              }}
-              title="Vista grid"
-            >
-              <IconLayoutGrid size={15} stroke={1.75} />
-            </button>
-            <button
-              onClick={() => setIsListView(true)}
-              className="p-1.5 transition-colors duration-200 cursor-pointer"
-              style={{
-                background: isListView ? 'var(--accent)' : 'transparent',
-                color: isListView ? 'var(--accent-text)' : 'var(--text-muted)',
-              }}
-              title="Vista lista"
-            >
-              <IconLayoutList size={15} stroke={1.75} />
-            </button>
-          </div>
-
-          {/* Añadir bookmark */}
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          {!isMobile && (
+            <div style={{ display: 'flex', border: '1px solid var(--border-dim)', borderRadius: '2px', overflow: 'hidden' }}>
+              <ViewBtn list={false} />
+              <ViewBtn list={true} />
+            </div>
+          )}
           <button
-            onClick={() => { setEditingBookmark(null); setShowBookmarkModal(true); }}
-            className="dim-btn flex items-center gap-2 text-xs font-medium transition-colors duration-200 cursor-pointer"
+            onClick={() => { setEditingBm(null); setShowModal(true); }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: '5px',
+              background: 'transparent', border: '1px solid var(--border-dim)', borderRadius: '2px',
+              cursor: 'pointer', color: 'var(--text-lo)', fontFamily: 'inherit',
+              fontSize: '0.6rem', letterSpacing: '0.1em', textTransform: 'uppercase',
+              padding: '4px 10px', transition: 'all 0.15s',
+            }}
+            onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--accent)'; el.style.borderColor = 'color-mix(in srgb, var(--accent) 35%, transparent)'; el.style.background = 'color-mix(in srgb, var(--accent) 5%, transparent)'; }}
+            onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.color = 'var(--text-lo)'; el.style.borderColor = 'var(--border-dim)'; el.style.background = 'transparent'; }}
           >
-            <IconCirclePlus size={18} stroke={1.5} />
-            Añadir
+            <IconCirclePlus size={13} stroke={1.5} /> Añadir
           </button>
         </div>
       </div>
 
-      {/* Vista Grid */}
-      {!isListView && <BigList bookmarks={bookmarks} /> }
+      <div className="section-body">
+        {(isMobile || isListView)
+          ? <CompactList bookmarks={bookmarks} />
+          : <BigList bookmarks={bookmarks} />}
+      </div>
 
-      {/* Vista Lista */}
-      {isListView && <CompactList bookmarks={bookmarks} /> }
-
-      <BookmarkModal
-        isOpen={showBookmarkModal}
-        isClosing={isClosing}
-        editingBookmark={editingBookmark}
-        onClose={handleCloseModal}
-        onSubmit={handleSubmit}
-      />
+      <BookmarkModal isOpen={showModal} isClosing={isClosing}
+        editingBookmark={editingBm} onClose={closeModal} onSubmit={handleSubmit} />
     </div>
   );
 };

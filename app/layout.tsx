@@ -1,20 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Roboto } from "next/font/google";
+import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeInitializer from "@/components/ThemeInitializer";
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
-
-const Rob = Roboto({
-  subsets: ["latin"]  
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-ibm-plex-mono",
 })
 
 export const metadata: Metadata = {
@@ -57,9 +50,7 @@ const blockingCode = `
       <head>
         <script dangerouslySetInnerHTML={{ __html: blockingCode }} />
       </head>
-			<body
-				className={`${Rob.className} antialiased`}
-			>
+			<body className={`${ibmPlexMono.className} antialiased`}>
 				<ThemeInitializer />
 				{children}
 			</body>

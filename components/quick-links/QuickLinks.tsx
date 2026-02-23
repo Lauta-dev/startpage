@@ -1,62 +1,69 @@
 'use client'
 
 import QuickLinksModal from "./QuickLinksModal";
-import { IconLink } from "@tabler/icons-react";
 
 interface QuickLink {
-  id: number;
-  name: string;
-  url: string;
-  icon: string | null;
-  position: number;
-  created_at: string;
+  id: number; name: string; url: string;
+  icon: string | null; position: number; created_at: string;
 }
 
-const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => {
-  return (
-    <div className="section-card p-4 sm:p-5 mb-4 sm:mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-xs font-semibold uppercase tracking-widest flex items-center gap-2"
-            style={{ color: 'var(--text-secondary)' }}>
-          <IconLink size={18} stroke={1.5} />
-          Quick Links
-        </h3>
-        <QuickLinksModal quickLinks={quickLinks} />
-      </div>
-
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-        {quickLinks.map((link, index) => (
+const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => (
+  <div className="section">
+    <div className="section-head">
+      <span className="section-label">Quick Links</span>
+      <QuickLinksModal quickLinks={quickLinks} />
+    </div>
+    <div className="section-body">
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(4, 1fr)',
+        gap: 0,
+      }}>
+        {quickLinks.map((link, i) => (
           <a
-            key={index}
+            key={link.id}
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl transition-all duration-75"
             style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border)',
+              display: 'flex', alignItems: 'center', gap: '10px',
+              padding: '12px 14px',
+              textDecoration: 'none', color: 'var(--text-mid)',
+              borderRight: '1px solid var(--border-dim)',
+              borderBottom: '1px solid var(--border-dim)',
+              fontSize: '0.72rem', letterSpacing: '0.02em',
+              transition: 'background 0.1s, color 0.1s',
             }}
             onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = 'color-mix(in srgb, var(--accent) 10%, var(--bg-surface))';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
+              const el = e.currentTarget as HTMLElement;
+              el.style.background = 'var(--bg-hover)';
+              el.style.color = 'var(--text-hi)';
+              (el.querySelector('.ql-icon') as HTMLElement)?.style.setProperty('border-color', 'var(--accent)');
             }}
             onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
+              const el = e.currentTarget as HTMLElement;
+              el.style.background = 'transparent';
+              el.style.color = 'var(--text-mid)';
+              (el.querySelector('.ql-icon') as HTMLElement)?.style.setProperty('border-color', 'var(--border)');
             }}
           >
-            <div className="w-8 h-8 rounded-lg p-1.5 flex-shrink-0 flex items-center justify-center"
-                 style={{ background: 'var(--bg-elevated)' }}>
-              <img src={link?.icon ?? ""} alt={link.name} className="w-full h-full object-contain" />
+            <div className="ql-icon" style={{
+              width: '26px', height: '26px', borderRadius: '2px',
+              border: '1px solid var(--border)', background: 'var(--bg-surface)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0, transition: 'border-color 0.15s',
+            }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={link.icon ?? ''} alt={link.name} style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
             </div>
-            <h3 className="font-medium truncate text-sm transition-colors" style={{ color: 'var(--text-secondary)' }}>
+            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {link.name}
-            </h3>
+            </span>
           </a>
         ))}
       </div>
     </div>
-  );
-};
+  </div>
+);
 
 export default QuickLinks;

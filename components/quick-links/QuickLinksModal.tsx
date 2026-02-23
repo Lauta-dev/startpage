@@ -1,158 +1,357 @@
 'use client'
 
 import { useState } from "react";
-import { IconSettings, IconPlus, IconTrash, IconX, IconLink } from "@tabler/icons-react";
+import { IconSettings, IconX, IconTrash } from "@tabler/icons-react";
 import AddQuickLink from "@/actions/addQuickLink";
 import RemoveQuickLink from "@/actions/DeleteQuickLink";
 
 interface QuickLink {
-  id: number;
-  name: string;
-  url: string;
-  icon: string | null;
-  position: number;
-  created_at: string;
+  id: number; name: string; url: string;
+  icon: string | null; position: number; created_at: string;
 }
 
+const mono = "'IBM Plex Mono', monospace";
+
 function QuickLinksModal({ quickLinks }: { quickLinks: QuickLink[] }) {
-  const [openModal, setOpenModal] = useState(false);
+  // mounted = el backdrop está en el DOM; visible = opacity:1 (CSS transition)
+  const [mounted, setMounted]   = useState(false);
+  const [visible, setVisible]   = useState(false);
   const [urlValue, setUrlValue] = useState('');
+
+  function openModal() {
+    setMounted(true);
+    // doble rAF: asegura que el browser pintó opacity:0 antes de transicionar a 1
+    requestAnimationFrame(() => requestAnimationFrame(() => setVisible(true)));
+  }
+
+  function closeModal() {
+    setVisible(false);                   // dispara fade-out (transition 0.2s)
+    setTimeout(() => {
+      setMounted(false);
+      setUrlValue('');
+    }, 220);                             // debe ser >= duración de la transition
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const data = Object.fromEntries(formData);
-    await AddQuickLink({ url: data.url as string });
+    await AddQuickLink({ url: formData.get('url') as string });
     setUrlValue('');
     (e.target as HTMLFormElement).reset();
   }
 
-  async function handleDeleteItem(id: number) {
-    await RemoveQuickLink(id);
-  }
+  const backdropOpacity = visible ? 1 : 0;
+  const boxTransform    = visible ? 'translateY(0) scale(1)' : 'translateY(12px) scale(0.97)';
 
   return (
     <>
+      {/* ── Settings trigger btn ── */}
       <button
-        onClick={() => setOpenModal(true)}
-        className="dim-btn flex items-center gap-2 text-xs font-medium transition-colors duration-200 cursor-pointer"
+        onClick={openModal}
+        style={{
+          fontFamily: mono,
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          color: 'var(--text-lo)',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '3px',
+          transition: 'color 0.15s',
+        }}
+        onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
+        onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-lo)')}
       >
-        <IconSettings size={18} stroke={1.5} />
+        <IconSettings size={15} stroke={1.5} />
       </button>
 
-      <dialog open={openModal} className="modal">
+      {/* ── .modal-backdrop ── */}
+      {mounted && (
         <div
-          className="modal-box rounded-2xl flex flex-col gap-6 w-11/12 max-w-2xl"
+          onClick={closeModal}
           style={{
-            background: 'linear-gradient(135deg, var(--bg-surface) 0%, var(--bg-elevated) 100%)',
-            border: '1px solid var(--border)',
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(5,8,12,0.88)',
+            zIndex: 100,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            opacity: backdropOpacity,
+            transition: 'opacity 0.2s',
           }}
         >
-          {/* Header */}
-          <div className="flex justify-between items-center">
-            <h3 className="font-semibold text-lg flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
-              <IconLink size={20} stroke={1.5} style={{ color: 'var(--accent)' }} />
-              Quick Links
-            </h3>
-            <button
-              onClick={() => { setOpenModal(false); setUrlValue(''); }}
-              className="btn btn-sm btn-circle btn-ghost transition-colors cursor-pointer"
-              style={{ color: 'var(--text-secondary)' }}
-            >
-              <IconX size={18} />
-            </button>
-          </div>
-
-          {/* Añadir nuevo */}
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-1.5"
-               style={{ color: 'var(--text-secondary)' }}>
-              <IconPlus size={14} stroke={2} />
-              Añadir enlace
-            </p>
-            <form onSubmit={handleSubmit} className="flex sm:flex-row">
-              <input
-                type="url"
-                name="url"
-                value={urlValue}
-                onChange={e => setUrlValue(e.target.value)}
-                placeholder="https://ejemplo.com"
-                className="input input-sm w-full sm:flex-1 rounded-lg h-10 text-sm focus:outline-none"
-                style={{
-                  background: 'var(--bg-elevated)',
-                  border: '1px solid var(--border)',
-                  color: 'var(--text-primary)',
-                  borderRadius: "10px 0 0 10px"
-                }}
-                onFocus={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
-                onBlur={e => (e.currentTarget.style.borderColor = 'var(--border)')}
-              />
-              <button
-                type="submit"
-                disabled={urlValue.trim() === ''}
-                className="btn btn-sm sm:w-auto rounded-lg gap-1.5 h-10 border-0 font-semibold transition-opacity duration-200"
-                style={{
-                  background: 'var(--accent)',
-                  color: 'var(--accent-text)',
-                  opacity: urlValue.trim() === '' ? 0.35 : 1,
-                  cursor: urlValue.trim() === '' ? 'not-allowed' : 'pointer',
-                  borderRadius: "0px 10px 10px 0px"
-                }}
-                onMouseEnter={e => { if (urlValue.trim() !== '') e.currentTarget.style.filter = 'brightness(1.15)'; }}
-                onMouseLeave={e => { e.currentTarget.style.filter = 'brightness(1)'; }}
-              >
-                <IconPlus size={16} />
-                Añadir
-              </button>
-            </form>
-          </div>
-
-          {/* Lista para eliminar */}
-          {quickLinks.length > 0 && (
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-widest mb-3 flex items-center gap-1.5"
-                 style={{ color: 'var(--text-secondary)' }}>
-                <IconTrash size={14} stroke={1.5} />
-                Eliminar enlace
-              </p>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                {quickLinks.map((link) => (
-                  <button
-                    key={link.id}
-                    onClick={() => handleDeleteItem(link.id)}
-                    className="flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group cursor-pointer"
-                    style={{
-                      background: 'var(--bg-surface)',
-                      border: '1px solid var(--border)',
-                    }}
-                    onMouseEnter={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
-                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--nord11)';
-                    }}
-                    onMouseLeave={e => {
-                      (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
-                      (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
-                    }}
-                  >
-                    <div className="w-7 h-7 rounded-lg p-1.5 flex-shrink-0 flex items-center justify-center"
-                         style={{ background: 'var(--bg-elevated)' }}>
-                      <img src={link?.icon ?? ""} alt={link.name} className="w-full h-full object-contain" />
-                    </div>
-                    <span className="font-medium truncate text-sm flex-1 text-left"
-                          style={{ color: 'var(--text-secondary)' }}>
-                      {link.name}
-                    </span>
-                    <IconTrash size={16} className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                               style={{ color: 'var(--nord11)' }} />
-                  </button>
-                ))}
+          {/* ── .modal-box ── */}
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{
+              background: 'var(--bg-raised)',
+              border: '1px solid var(--border)',
+              borderRadius: '3px',
+              width: '90%',
+              maxWidth: '520px',
+              overflow: 'hidden',
+              transform: boxTransform,
+              transition: 'transform 0.2s, opacity 0.2s',
+              opacity: backdropOpacity,
+            }}
+          >
+            {/* ── .modal-header ── */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 16px',
+              borderBottom: '1px solid var(--border-dim)',
+              background: 'var(--bg)',
+            }}>
+              {/* .modal-title */}
+              <div style={{
+                fontFamily: mono,
+                fontSize: '0.65rem',
+                letterSpacing: '0.14em',
+                textTransform: 'uppercase',
+                color: 'var(--text-mid)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}>
+                {/* .modal-title-dot */}
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--accent)', flexShrink: 0, display: 'inline-block' }} />
+                Quick Links — Gestionar
               </div>
-            </div>
-          )}
-        </div>
 
-        <div className="modal-backdrop" onClick={() => setOpenModal(false)} />
-      </dialog>
+              {/* .modal-close */}
+              <button
+                onClick={closeModal}
+                style={{
+                  fontFamily: mono,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: '22px',
+                  height: '22px',
+                  border: '1px solid var(--border-dim)',
+                  borderRadius: '2px',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  color: 'var(--text-lo)',
+                  fontSize: '0.75rem',
+                  transition: 'all 0.15s',
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--accent)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.borderColor = 'var(--border-dim)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--text-lo)';
+                }}
+              >
+                <IconX size={12} />
+              </button>
+            </div>
+
+            {/* ── .modal-body ── */}
+            <div style={{ padding: '20px 18px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+              {/* Añadir enlace */}
+              <div>
+                {/* .modal-sub */}
+                <div style={{
+                  fontFamily: mono,
+                  fontSize: '0.58rem',
+                  letterSpacing: '0.14em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-lo)',
+                  marginBottom: '10px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}>
+                  <span style={{ color: 'var(--accent)' }}>{'>'}</span>
+                  Añadir enlace
+                </div>
+
+                {/* .modal-input-row — focus-within via React */}
+                <form
+                  onSubmit={handleSubmit}
+                  style={{
+                    display: 'flex',
+                    border: '1px solid var(--border)',
+                    borderRadius: '2px',
+                    overflow: 'hidden',
+                    transition: 'border-color 0.15s',
+                  }}
+                  onFocus={e  => (e.currentTarget.style.borderColor = 'var(--accent)')}
+                  onBlur={e   => (e.currentTarget.style.borderColor = 'var(--border)')}
+                >
+                  {/* .modal-input */}
+                  <input
+                    type="url"
+                    name="url"
+                    value={urlValue}
+                    onChange={e => setUrlValue(e.target.value)}
+                    placeholder="https://ejemplo.com"
+                    style={{
+                      flex: 1,
+                      background: 'var(--bg-surface)',
+                      border: 'none',
+                      outline: 'none',
+                      fontFamily: mono,
+                      fontSize: '0.78rem',
+                      color: 'var(--text-hi)',
+                      padding: '9px 12px',
+                      minWidth: 0,
+                    }}
+                    /* placeholder italic via inline — no se puede con style prop en React, usamos className trick */
+                    className="modal-url-input"
+                  />
+                  {/* .modal-submit */}
+                  <button
+                    type="submit"
+                    disabled={!urlValue.trim()}
+                    style={{
+                      fontFamily: mono,
+                      background: 'var(--accent)',
+                      border: 'none',
+                      borderLeft: '1px solid rgba(0,0,0,0.2)',
+                      padding: '9px 16px',
+                      fontSize: '0.65rem',
+                      fontWeight: 600,
+                      letterSpacing: '0.1em',
+                      textTransform: 'uppercase',
+                      color: '#0a0c0f',
+                      cursor: urlValue.trim() ? 'pointer' : 'not-allowed',
+                      opacity: urlValue.trim() ? 1 : 0.35,
+                      flexShrink: 0,
+                      transition: 'filter 0.15s, opacity 0.15s',
+                    }}
+                    onMouseEnter={e => { if (urlValue.trim()) (e.currentTarget as HTMLElement).style.filter = 'brightness(1.1)'; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.filter = 'brightness(1)'; }}
+                  >
+                    Añadir
+                  </button>
+                </form>
+              </div>
+
+              {/* Eliminar enlace */}
+              {quickLinks.length > 0 && (
+                <div>
+                  {/* .modal-sub */}
+                  <div style={{
+                    fontFamily: mono,
+                    fontSize: '0.58rem',
+                    letterSpacing: '0.14em',
+                    textTransform: 'uppercase',
+                    color: 'var(--text-lo)',
+                    marginBottom: '10px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}>
+                    <span style={{ color: 'var(--color-danger)' }}>{'>'}</span>
+                    Eliminar enlace
+                  </div>
+
+                  {/* .modal-list */}
+                  <div style={{ display: 'flex',  gap: '2px' }}>
+                    {quickLinks.map(link => (
+                      /* .modal-list-item */
+                      <button
+                        key={link.id}
+                        onClick={() => RemoveQuickLink(link.id)}
+                        style={{
+                          fontFamily: mono,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '10px',
+                          padding: '8px 10px',
+                          border: '1px solid var(--border-dim)',
+                          borderRadius: '2px',
+                          cursor: 'pointer',
+                          background: 'var(--bg-surface)',
+                          width: '100%',
+                          textAlign: 'left',
+                          transition: 'all 0.12s',
+                        }}
+                        onMouseEnter={e => {
+                          const el = e.currentTarget as HTMLElement;
+                          el.style.borderColor = '#4a2020';
+                          el.style.background  = '#120a0a';
+                          const name = el.querySelector<HTMLElement>('.ml-name');
+                          const del  = el.querySelector<HTMLElement>('.ml-del');
+                          if (name) name.style.color   = '#f07178';
+                          if (del)  del.style.opacity  = '1';
+                          if (del)  del.style.color    = '#f07178';
+                        }}
+                        onMouseLeave={e => {
+                          const el = e.currentTarget as HTMLElement;
+                          el.style.borderColor = 'var(--border-dim)';
+                          el.style.background  = 'var(--bg-surface)';
+                          const name = el.querySelector<HTMLElement>('.ml-name');
+                          const del  = el.querySelector<HTMLElement>('.ml-del');
+                          if (name) name.style.color  = 'var(--text-mid)';
+                          if (del)  del.style.opacity = '0';
+                        }}
+                      >
+                        {/* .modal-list-icon */}
+                        <div style={{
+                          width: '22px', height: '22px',
+                          borderRadius: '2px',
+                          background: 'var(--bg-raised)',
+                          border: '1px solid var(--border-dim)',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          flexShrink: 0,
+                        }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={link.icon ?? ''} alt={link.name} style={{ width: '12px', height: '12px', objectFit: 'contain' }} />
+                        </div>
+
+                        {/* .modal-list-name */}
+                        <span className="ml-name" style={{
+                          flex: 1,
+                          fontSize: '0.72rem',
+                          color: 'var(--text-mid)',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          transition: 'color 0.12s',
+                        }}>
+                          {link.name}
+                        </span>
+
+                        {/* .modal-list-del */}
+                        <span className="ml-del" style={{
+                          fontSize: '0.6rem',
+                          letterSpacing: '0.06em',
+                          color: 'var(--text-lo)',
+                          opacity: 0,
+                          transition: 'all 0.12s',
+                          flexShrink: 0,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px',
+                        }}>
+                          <IconTrash size={12} /> eliminar
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* placeholder italic para el input del modal */}
+      <style>{`
+        .modal-url-input::placeholder {
+          color: var(--text-lo);
+          font-style: italic;
+        }
+      `}</style>
     </>
   );
 }

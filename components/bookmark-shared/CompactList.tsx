@@ -4,77 +4,59 @@ function getFavicon(url: string) {
   try { return `https://www.google.com/s2/favicons?sz=32&domain=${new URL(url).hostname}`; }
   catch { return ''; }
 }
-
 function getDomain(url: string) {
   try { return new URL(url).hostname.replace('www.', ''); }
   catch { return url; }
 }
+function getTitle(b: Bookmark) { return b.ogTitle ?? b.title; }
 
-function getTitle(bookmark: Bookmark) {
-  return bookmark.ogTitle ?? bookmark.title;
-}
+const mono: React.CSSProperties = { fontFamily: "'IBM Plex Mono', monospace" };
 
-const CompactList = ({ bookmarks }: { bookmarks: Bookmark[] }) => {
-  return (
-    <ul
-      className="list rounded-box border-0"
-    >
-      {bookmarks.map((bookmark) => (
-        <li
-          key={bookmark.id}
-          className="mb-4"
-          style={{ borderColor: "var(--border)" }}
-        >
-            <a
-            href={bookmark.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex list-row items-center gap-3  px-4 py-3 rounded-box duration-150"
-            style={{
-              background: 'var(--bg-surface)',
-              border: '1px solid var(--border)',
-            }}
-            onMouseEnter={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--bg-overlay)';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--accent)';
-            }}
-            onMouseLeave={e => {
-              (e.currentTarget as HTMLElement).style.background = 'var(--bg-surface)';
-              (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)';
-            }}
-          >
-            {/* Favicon */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <div className="w-8 h-8 rounded-lg p-1.5 flex-shrink-0 flex items-center justify-center"
-                 style={{ background: 'var(--bg-elevated)' }}>
-              <img src={getFavicon(bookmark.url)} alt={bookmark.title} className="w-full h-full object-contain" />
-            </div>
-
-            {/* Text */}
-            <div className="flex-1 min-w-0">
-              <p className="font-medium truncate flex gap-1 items-center" style={{ color: "var(--text-primary)" }}>
-                {getTitle(bookmark)}
-                <span
-              className="text-xs hidden sm:block shrink-0 px-1 py-0.3 rounded-full"
-              style={{
-                color: "var(--text-secondary)",
-                background: "var(--bg-surface)",
-                border: "1px solid var(--border)",
-              }}
-            >
-              {getDomain(bookmark.url)}
-            </span>
-              </p>
-              <p className="text-xs truncate" style={{ color: "var(--text-secondary)" }}>
-                {bookmark.desc ?? getDomain(bookmark.url)}
-              </p>
-            </div>
-            
-          </a>
-        </li>
-      ))}
-    </ul>
-  );
-};
+const CompactList = ({ bookmarks }: { bookmarks: Bookmark[] }) => (
+  <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid var(--border-dim)' }}>
+    {bookmarks.map(bookmark => (
+      <a key={bookmark.id} href={bookmark.url} target="_blank" rel="noopener noreferrer"
+        style={{ display: 'flex', alignItems: 'center', gap: '10px',
+          padding: '9px 14px', borderBottom: '1px solid var(--border-dim)',
+          textDecoration: 'none', color: 'var(--text-secondary)', transition: 'background 0.1s, padding-left 0.12s' }}
+        onMouseEnter={e => {
+          const el = e.currentTarget as HTMLElement;
+          el.style.background = 'var(--bg-overlay)';
+          el.style.paddingLeft = '18px';
+          const title = el.querySelector('.cl-title') as HTMLElement;
+          if (title) title.style.color = 'var(--accent)';
+        }}
+        onMouseLeave={e => {
+          const el = e.currentTarget as HTMLElement;
+          el.style.background = 'transparent';
+          el.style.paddingLeft = '14px';
+          const title = el.querySelector('.cl-title') as HTMLElement;
+          if (title) title.style.color = 'var(--text-secondary)';
+        }}
+      >
+        <div style={{ width: '24px', height: '24px', borderRadius: '2px', border: '1px solid var(--border-dim)',
+          background: 'var(--bg-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={getFavicon(bookmark.url)} alt="" style={{ width: '13px', height: '13px', objectFit: 'contain', opacity: 0.7 }} />
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <p className="cl-title" style={{ ...mono, fontSize: '0.75rem', fontWeight: 500,
+            color: 'var(--text-secondary)', overflow: 'hidden', textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap', transition: 'color 0.12s', margin: 0 }}>
+            {getTitle(bookmark)}
+          </p>
+          <p style={{ ...mono, fontSize: '0.62rem', color: 'var(--text-muted)',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: 0 }}>
+            {bookmark.desc ?? getDomain(bookmark.url)}
+          </p>
+        </div>
+        <span style={{ ...mono, fontSize: '0.6rem', color: 'var(--text-muted)',
+          letterSpacing: '0.04em', flexShrink: 0 }}>
+          {getDomain(bookmark.url)}
+        </span>
+      </a>
+    ))}
+  </div>
+);
 
 export default CompactList;
