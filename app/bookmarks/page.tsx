@@ -1,9 +1,7 @@
 import getBookmarks from '@/actions/getBookmark';
-import { BookmarksPage  } from '@/components/bookmarks-list/BookmarkLayout';
+import { BookmarkLayout } from '@/components/bookmarks/BookmarkLayout';
 
-export default async function Page() {
+export default async function BookmarksPage() {
   const bookmarks = await getBookmarks();
-  return <>
-    <BookmarksPage  bookmarks={bookmarks} />
-  </>;
+  return <BookmarkLayout bookmarks={bookmarks} />;
 }

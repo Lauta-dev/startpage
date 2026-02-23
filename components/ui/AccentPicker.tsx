@@ -112,7 +112,7 @@ const AccentPicker: React.FC = () => {
           {current.label}
         </span>
         <IconChevronDown
-          size={14}
+          size={18}
           stroke={2}
           className="transition-transform duration-200"
           style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)' }}
@@ -146,7 +146,7 @@ const AccentPicker: React.FC = () => {
               <span className="w-5 h-5 rounded-sm flex-shrink-0" style={{ background: a.value }} />
               <span className="flex-1 text-left">{a.label}</span>
               {a.value === accent && (
-                <IconCheck size={14} stroke={2.5} style={{ color: 'var(--accent)' }} />
+                <IconCheck size={18} stroke={2.5} style={{ color: 'var(--accent)' }} />
               )}
             </button>
           ))}

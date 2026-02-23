@@ -28,6 +28,7 @@ const SearchBar: React.FC = () => {
   const [focusedIndex, setFocusedIndex]       = useState(0);
   const inputRef     = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
 
   // Build dropdown suggestions
   useEffect(() => {
@@ -52,6 +53,14 @@ const SearchBar: React.FC = () => {
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 640px)');
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
   }, []);
 
   const applyBang = (code: string, entry: BangEntry) => {
@@ -173,42 +182,43 @@ const SearchBar: React.FC = () => {
             <span className="bang-pill__divider" />
           </div>
         ) : (
-          /* .search-prompt */
-          <span style={{
-            padding: '0 12px',
-            color: 'var(--accent)',
-            fontSize: '1rem',
-            fontWeight: 700,
-            flexShrink: 0,
-            userSelect: 'none',
-            borderRight: '1px solid var(--border-dim)',
-            display: 'flex',
-            alignItems: 'center',
-            height: '100%',
-          }}>›</span>
+          /* .search-prompt — hidden on mobile */
+          !isMobile && (
+            <span style={{
+              padding: '0 12px',
+              color: 'var(--accent)',
+              fontSize: '1rem',
+              fontWeight: 700,
+              flexShrink: 0,
+              userSelect: 'none',
+              borderRight: '1px solid var(--border-dim)',
+              display: 'flex',
+              alignItems: 'center',
+              height: '100%',
+            }}>›</span>
+          )
         )}
 
         {/* input area */}
         <div style={{ position: 'relative', flex: 1, height: '100%', display: 'flex', alignItems: 'center' }}>
-          {/* animated crossfade placeholder (italic, color text-lo) */}
-          {inputValue === '' && (
-            <span
-              style={{
-                position: 'absolute',
-                left: '14px',
-                pointerEvents: 'none',
-                userSelect: 'none',
-                fontFamily: mono,
-                fontSize: '0.88rem',
-                color: 'var(--text-lo)',
-                fontStyle: 'italic',
-                opacity: placeholderVisible ? 1 : 0,
-                transition: 'opacity 0.2s',
-              }}
-            >
-              {placeholderText}
-            </span>
-          )}
+          {/* Placeholder — fade out when typing, fade in when cleared */}
+          <span
+            style={{
+              position: 'absolute',
+              left: '14px',
+              pointerEvents: 'none',
+              userSelect: 'none',
+              fontFamily: mono,
+              fontSize: '0.88rem',
+              color: 'var(--text-lo)',
+              fontStyle: 'italic',
+              opacity: inputValue !== '' ? 0 : placeholderVisible ? 1 : 0,
+              transform: inputValue !== '' ? 'translateY(-4px)' : 'translateY(0)',
+              transition: 'opacity 0.25s ease, transform 0.25s ease',
+            }}
+          >
+            {placeholderText}
+          </span>
           {/* .search-input */}
           <input
             ref={inputRef}
@@ -233,8 +243,8 @@ const SearchBar: React.FC = () => {
           />
         </div>
 
-        {/* .search-hint */}
-        {!activeBang && (
+        {/* .search-hint — hidden on mobile */}
+        {!activeBang && !isMobile && (
           <span style={{
             padding: '0 14px',
             fontSize: '0.58rem',

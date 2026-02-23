@@ -1,13 +1,21 @@
-'use client'
+'use client';
 
-import QuickLinksModal from "./QuickLinksModal";
+import QuickLinksModal from './QuickLinksModal';
 
-interface QuickLink {
-  id: number; name: string; url: string;
-  icon: string | null; position: number; created_at: string;
+export interface QuickLink {
+  id:         number;
+  name:       string;
+  url:        string;
+  icon:       string | null;
+  position:   number;
+  created_at: string;
 }
 
-const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => (
+interface Props {
+  quickLinks: QuickLink[];
+}
+
+const QuickLinks: React.FC<Props> = ({ quickLinks }) => (
   <div className="section">
     <div className="section-head">
       <span className="section-label">Quick Links</span>
@@ -17,22 +25,21 @@ const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => (
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-        gap: 0,
       }}>
-        {quickLinks.map((link, i) => (
+        {quickLinks.map(link => (
           <a
             key={link.id}
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
+            className="group flex items-center gap-2.5 no-underline transition-all duration-100"
             style={{
-              display: 'flex', alignItems: 'center', gap: '10px',
               padding: '12px 14px',
-              textDecoration: 'none', color: 'var(--text-mid)',
+              color: 'var(--text-mid)',
               borderRight: '1px solid var(--border-dim)',
               borderBottom: '1px solid var(--border-dim)',
-              fontSize: '0.72rem', letterSpacing: '0.02em',
-              transition: 'background 0.1s, color 0.1s',
+              fontSize: '0.72rem',
+              letterSpacing: '0.02em',
             }}
             onMouseEnter={e => {
               const el = e.currentTarget as HTMLElement;
@@ -47,18 +54,19 @@ const QuickLinks = ({ quickLinks }: { quickLinks: QuickLink[] }) => (
               (el.querySelector('.ql-icon') as HTMLElement)?.style.setProperty('border-color', 'var(--border)');
             }}
           >
-            <div className="ql-icon" style={{
-              width: '26px', height: '26px', borderRadius: '2px',
-              border: '1px solid var(--border)', background: 'var(--bg-surface)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              flexShrink: 0, transition: 'border-color 0.15s',
-            }}>
+            <div
+              className="ql-icon flex items-center justify-center flex-shrink-0 transition-colors duration-150"
+              style={{
+                width: '26px', height: '26px',
+                borderRadius: '2px',
+                border: '1px solid var(--border)',
+                background: 'var(--bg-surface)',
+              }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={link.icon ?? ''} alt={link.name} style={{ width: '14px', height: '14px', objectFit: 'contain' }} />
             </div>
-            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {link.name}
-            </span>
+            <span className="overflow-hidden text-ellipsis whitespace-nowrap">{link.name}</span>
           </a>
         ))}
       </div>

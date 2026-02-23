@@ -1,33 +1,29 @@
 import Clock from '@/components/ui/Clock';
 import SearchBar from '@/components/ui/SearchBar';
 import AccentPicker from '@/components/ui/AccentPicker';
-import ThemeToggle from '@/components/ui/ThemeToggle';
 import QuickLinks from '@/components/quick-links/QuickLinks';
 import BookmarkGrid from '@/components/bookmarks/BookmarkGrid';
-import { Bookmark } from '@/types/bookmark';
+import type { QuickLink } from '@/components/quick-links/QuickLinks';
+import type { Bookmark } from '@/types/bookmark';
 
-interface QuickLink {
-  id: number; name: string; url: string;
-  icon: string | null; position: number; created_at: string;
+interface Props {
+  bookmarks:  Bookmark[];
+  quickLinks: QuickLink[];
 }
 
-const StartPage = ({ bookmarks, quickLinks }: { bookmarks: Bookmark[], quickLinks: QuickLink[] }) => (
+const StartPage: React.FC<Props> = ({ bookmarks, quickLinks }) => (
   <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 28px 80px' }}>
 
-    {/* HEADER — padding: 36px 0 32px igual al HTML */}
-    <div style={{
-      display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-      padding: '36px 0 32px',
-      borderBottom: '1px solid var(--border-dim)',
-      marginBottom: '28px',
-    }}>
+    <div
+      className="flex items-start justify-between"
+      style={{ padding: '36px 0 32px', borderBottom: '1px solid var(--border-dim)', marginBottom: '28px' }}
+    >
       <Clock />
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '10px', paddingTop: '6px' }}>
+      <div className="flex flex-col items-end gap-2.5 pt-1.5">
         <AccentPicker />
       </div>
     </div>
 
-    {/* search-wrap margin-bottom: 24px */}
     <div style={{ marginBottom: '24px' }}>
       <SearchBar />
     </div>
