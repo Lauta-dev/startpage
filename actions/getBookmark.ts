@@ -6,7 +6,6 @@ export default async function getBookmarks(): Promise<Bookmark[]> {
     SELECT id, title, url, og_image, og_description, og_title, category, category_id, created_at
     FROM bookmarks
     ORDER BY created_at DESC
-    LIMIT 6
   `;
 
   const result = await client.execute(query);

@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 import { IconSettings, IconX, IconTrash } from '@tabler/icons-react';
-import AddQuickLink from '@/actions/addQuickLink';
+import { SaveQuickLink } from '@/actions/addQuickLink';
 import RemoveQuickLink from '@/actions/DeleteQuickLink';
+import { fetchMetadata } from '@/actions/fetchMetadata';
 import type { QuickLink } from './QuickLinks';
+import { toastFlow } from '@/components/ui/Toast';
 
 interface Props {
   quickLinks: QuickLink[];
@@ -28,9 +30,33 @@ const QuickLinksModal: React.FC<Props> = ({ quickLinks }) => {
   const handleAddLink = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    await AddQuickLink({ url: formData.get('url') as string });
-    setUrlInput('');
-    (e.target as HTMLFormElement).reset();
+    const url = formData.get('url') as string;
+
+    // Paso 1 — metadata
+    const id_toast = toastFlow.start('Obteniendo metadata...');
+    const meta = await fetchMetadata(url);
+    if (!meta.ok) { toastFlow.error(id_toast, meta.message); return; }
+
+    // Paso 2 — DB
+    toastFlow.step(id_toast, 'Guardando en base de datos...');
+    const result = await SaveQuickLink({ name: meta.title, url: meta.url, favicon: meta.favicon });
+    if (result.ok) {
+      toastFlow.success(id_toast, 'Quick link guardado');
+      setUrlInput('');
+      (e.target as HTMLFormElement).reset();
+    } else {
+      toastFlow.error(id_toast, result.message);
+    }
+  };
+
+  const handleRemoveLink = async (id: number, name: string) => {
+    const id_toast = toastFlow.start('Eliminando...');
+    const result = await RemoveQuickLink(id);
+    if (result?.success) {
+      toastFlow.success(id_toast, `"${name}" eliminado`);
+    } else {
+      toastFlow.error(id_toast, 'Error al eliminar el enlace');
+    }
   };
 
   const SectionLabel = ({ accent, children }: { accent?: boolean; children: React.ReactNode }) => (
@@ -181,7 +207,7 @@ const QuickLinksModal: React.FC<Props> = ({ quickLinks }) => {
                     {quickLinks.map(link => (
                       <button
                         key={link.id}
-                        onClick={() => RemoveQuickLink(link.id)}
+                        onClick={() => handleRemoveLink(link.id, link.name)}
                         className="flex items-center gap-2.5 cursor-pointer transition-all duration-120 w-full text-left"
                         style={{
                           fontFamily: 'inherit',

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import ThemeInitializer from "@/components/ThemeInitializer";
+import { AppToastContainer } from "@/components/ui/Toast";
 
 const ibmPlexMono = IBM_Plex_Mono({
   subsets: ["latin"],
@@ -52,6 +53,7 @@ const blockingCode = `
       </head>
 			<body className={`${ibmPlexMono.className} antialiased`}>
 				<ThemeInitializer />
+				<AppToastContainer />
 				{children}
 			</body>
 		</html>

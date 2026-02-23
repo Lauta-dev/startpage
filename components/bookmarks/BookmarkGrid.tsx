@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { IconCirclePlus, IconLayoutGrid, IconLayoutList } from '@tabler/icons-react';
 import BookmarkModal from './BookmarkModal';
-import { CreateBookmark, EditBookark, DeleteBookmark } from '@/actions/Bookmarks';
+import { SaveBookmark, UpdateBookmark, DeleteBookmark } from '@/actions/Bookmarks';
+import { fetchMetadata } from '@/actions/fetchMetadata';
 import { getCategories, createCategory, Category } from '@/actions/getCategories';
 import BigList from './cards/BigList';
 import BigListMobile from './cards/BigListMobile';
 import { Bookmark } from '@/types/bookmark';
+import { toastFlow } from '@/components/ui/Toast';
 
 interface Props {
   bookmarks: Bookmark[];
@@ -40,35 +42,50 @@ const BookmarkGrid: React.FC<Props> = ({ bookmarks }) => {
   ) => {
     e.preventDefault();
     const data = Object.fromEntries(new FormData(e.currentTarget));
-    try {
-      let finalCatId   = categoryId;
-      let finalCatName = categoryName;
-      if (categoryId === -1 && categoryName) {
-        const newCat = await createCategory(categoryName);
-        finalCatId   = newCat.id;
-        finalCatName = newCat.name;
-        setCategories(prev => [...prev, newCat].sort((a, b) => a.name.localeCompare(b.name)));
-      }
-      if (editingBookmark) {
-        await EditBookark({
-          customTitle:  data.name as string,
-          newUrl:       data.site as string,
-          id:           editingBookmark.id,
-          categoryId:   finalCatId,
-          categoryName: finalCatName,
-        });
-      } else {
-        await CreateBookmark(data.site as string, finalCatId, finalCatName);
-      }
-    } catch (err) {
-      console.error(err);
-    }
+    let finalCatId = categoryId, finalCatName = categoryName;
     closeModal();
+
+    // Paso 1 — metadata
+    const tid = toastFlow.start('Obteniendo metadata...');
+    const meta = await fetchMetadata(data.site as string);
+    if (!meta.ok) { toastFlow.error(tid, meta.message); return; }
+
+    // Categoría nueva si hace falta
+    if (categoryId === -1 && categoryName) {
+      const newCat = await createCategory(categoryName);
+      finalCatId   = newCat.id;
+      finalCatName = newCat.name;
+      setCategories(prev => [...prev, newCat].sort((a, b) => a.name.localeCompare(b.name)));
+    }
+
+    // Paso 2 — DB
+    toastFlow.step(tid, 'Guardando en base de datos...');
+    if (editingBookmark) {
+      const result = await UpdateBookmark({
+        id: editingBookmark.id, title: (data.name as string) || meta.title,
+        url: meta.url, ogImage: meta.ogImage,
+        categoryId: finalCatId, categoryName: finalCatName,
+      });
+      if (result.ok) toastFlow.success(tid, 'Bookmark actualizado');
+      else           toastFlow.error(tid, result.message);
+    } else {
+      const result = await SaveBookmark({
+        title: meta.title, url: meta.url, ogImage: meta.ogImage,
+        description: meta.description, categoryId: finalCatId, categoryName: finalCatName,
+      });
+      if (result.ok) toastFlow.success(tid, 'Bookmark guardado');
+      else           toastFlow.error(tid, result.message);
+    }
   };
 
   const editHandlers = {
     onEdit:   (b: Bookmark) => { setEditingBookmark({ id: b.id, bookmark: b }); setShowModal(true); },
-    onDelete: async (id: number) => { await DeleteBookmark(id); },
+    onDelete: async (id: number) => {
+      const tid = toastFlow.start('Eliminando bookmark...');
+      const result = await DeleteBookmark(id);
+      if (result.ok) toastFlow.success(tid, 'Bookmark eliminado');
+      else           toastFlow.error(tid, result.message);
+    },
   };
 
   return (
